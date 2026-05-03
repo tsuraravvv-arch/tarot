@@ -246,3 +246,87 @@ button {
     min-width: 0;
   }
 }
+.title-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255, 236, 170, 0.65), transparent 22%),
+    radial-gradient(circle at 50% 54%, rgba(104, 166, 255, 0.4), transparent 34%),
+    radial-gradient(circle at center, rgba(255, 255, 255, 0.18), transparent 58%);
+  transition: opacity 0.4s ease;
+}
+
+.title-screen.title-glow::after {
+  opacity: 1;
+  animation: titleGlowPulse 0.9s ease forwards;
+}
+
+@keyframes titleGlowPulse {
+  0% {
+    opacity: 0;
+    filter: blur(8px);
+  }
+  45% {
+    opacity: 1;
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 0;
+    filter: blur(14px);
+  }
+}
+.flip-card-button {
+  perspective: 1200px;
+}
+
+.flip-card {
+  width: min(62vw, 360px);
+  aspect-ratio: 933 / 1417;
+  margin: 0 auto;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.85s cubic-bezier(0.22, 0.8, 0.28, 1);
+}
+
+.flip-card.is-flipped .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 18px;
+  overflow: hidden;
+  filter: drop-shadow(0 0 24px rgba(214, 179, 89, 0.35));
+}
+
+.flip-card-front {
+  transform: rotateY(0deg);
+}
+
+.flip-card-back {
+  transform: rotateY(180deg);
+}
+
+.flip-card-face img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+@media (max-width: 600px) {
+  .flip-card {
+    width: min(64vw, 280px);
+  }
+}

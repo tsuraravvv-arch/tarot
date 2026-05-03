@@ -8,7 +8,7 @@
 </head>
 <body>
   <main class="app">
-    <section class="screen title-screen">
+    <section id="titleScreen" class="screen title-screen">
       <img
         src="./assets/ui/title.png"
         alt="タロット占い"
@@ -37,17 +37,45 @@
     </section>
   </main>
 
-  <script>
-    const oneCardButton = document.getElementById("oneCardButton");
-    const threeCardButton = document.getElementById("threeCardButton");
+<script>
+  const titleScreen = document.getElementById("titleScreen");
+  const oneCardButton = document.getElementById("oneCardButton");
+  const threeCardButton = document.getElementById("threeCardButton");
 
-    oneCardButton.addEventListener("click", () => {
-      window.location.href = "./one.html";
+  const titleBgm = new Audio("./assets/audio/title_bgm.mp3");
+  titleBgm.loop = true;
+  titleBgm.volume = 0.35;
+
+  function startTitleBgm() {
+    titleBgm.play().catch(() => {
+      // ブラウザの自動再生制限で失敗する場合があるため無視
     });
+  }
 
-    threeCardButton.addEventListener("click", () => {
+  function glowAndMove(url) {
+    startTitleBgm();
+
+    titleScreen.classList.add("title-glow");
+
+    setTimeout(() => {
+      window.location.href = url;
+    }, 900);
+  }
+
+  oneCardButton.addEventListener("click", () => {
+    glowAndMove("./one.html");
+  });
+
+  threeCardButton.addEventListener("click", () => {
+    startTitleBgm();
+    titleScreen.classList.add("title-glow");
+
+    setTimeout(() => {
       alert("3枚占いは準備中です。まずは1枚占いで遊んでください。");
-    });
-  </script>
-</body>
+      titleScreen.classList.remove("title-glow");
+    }, 700);
+  });
+
+  document.addEventListener("click", startTitleBgm, { once: true });
+</script></body>
 </html>
