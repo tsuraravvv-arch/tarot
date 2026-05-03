@@ -1,0 +1,288 @@
+[
+  {
+    "id": 0,
+    "number": "0",
+    "name_en": "THE FOOL",
+    "name_ja": "愚者",
+    "image": "00_THE_FOOL.png",
+    "keywords": [
+      "始まり",
+      "自由",
+      "可能性"
+    ],
+    "message_daily": "新しい一歩を踏み出すタイミングだよ。"
+  },
+  {
+    "id": 1,
+    "number": "I",
+    "name_en": "THE MAGICIAN",
+    "name_ja": "魔術師",
+    "image": "01_THE_MAGICIAN.png",
+    "keywords": [
+      "始まり",
+      "行動",
+      "可能性"
+    ],
+    "message_daily": "今ある力を使って、物事を形にできる時だよ。"
+  },
+  {
+    "id": 2,
+    "number": "II",
+    "name_en": "THE HIGH PRIESTESS",
+    "name_ja": "女教皇",
+    "image": "02_THE_HIGH_PRIESTESS.png",
+    "keywords": [
+      "直感",
+      "静けさ",
+      "内面"
+    ],
+    "message_daily": "急がず、自分の感覚を信じてみて。"
+  },
+  {
+    "id": 3,
+    "number": "III",
+    "name_en": "THE EMPRESS",
+    "name_ja": "女帝",
+    "image": "03_THE_EMPRESS.png",
+    "keywords": [
+      "豊かさ",
+      "育成",
+      "安心"
+    ],
+    "message_daily": "心地よい環境を整えることが幸運につながるよ。"
+  },
+  {
+    "id": 4,
+    "number": "IV",
+    "name_en": "THE EMPEROR",
+    "name_ja": "皇帝",
+    "image": "04_THE_EMPEROR.png",
+    "keywords": [
+      "安定",
+      "責任",
+      "計画"
+    ],
+    "message_daily": "目標や手順をはっきりさせると進みやすいよ。"
+  },
+  {
+    "id": 5,
+    "number": "V",
+    "name_en": "THE HIEROPHANT",
+    "name_ja": "教皇",
+    "image": "05_THE_HIEROPHANT.png",
+    "keywords": [
+      "学び",
+      "信頼",
+      "助言"
+    ],
+    "message_daily": "信頼できる人や基本に立ち返ると安心だよ。"
+  },
+  {
+    "id": 6,
+    "number": "VI",
+    "name_en": "THE LOVERS",
+    "name_ja": "恋人",
+    "image": "06_THE_LOVERS.png",
+    "keywords": [
+      "選択",
+      "調和",
+      "関係"
+    ],
+    "message_daily": "心が自然に向く方を選ぶとよさそう。"
+  },
+  {
+    "id": 7,
+    "number": "VII",
+    "name_en": "THE CHARIOT",
+    "name_ja": "戦車",
+    "image": "07_THE_CHARIOT.png",
+    "keywords": [
+      "前進",
+      "勝負",
+      "集中"
+    ],
+    "message_daily": "迷いすぎず、目標に向かって進む時だよ。"
+  },
+  {
+    "id": 8,
+    "number": "VIII",
+    "name_en": "STRENGTH",
+    "name_ja": "力",
+    "image": "08_STRENGTH.png",
+    "keywords": [
+      "優しさ",
+      "忍耐",
+      "内なる強さ"
+    ],
+    "message_daily": "強引に押さず、やさしく粘ることが力になるよ。"
+  },
+  {
+    "id": 9,
+    "number": "IX",
+    "name_en": "THE HERMIT",
+    "name_ja": "隠者",
+    "image": "09_THE_HERMIT.png",
+    "keywords": [
+      "探求",
+      "内省",
+      "一人時間"
+    ],
+    "message_daily": "静かに考えることで、次の道が見えてくるよ。"
+  },
+  {
+    "id": 10,
+    "number": "X",
+    "name_en": "WHEEL OF FORTUNE",
+    "name_ja": "運命の輪",
+    "image": "10_WHEEL_OF_FORTUNE.png",
+    "keywords": [
+      "転機",
+      "流れ",
+      "チャンス"
+    ],
+    "message_daily": "流れが変わるタイミング。柔軟に乗ってみて。"
+  },
+  {
+    "id": 11,
+    "number": "XI",
+    "name_en": "JUSTICE",
+    "name_ja": "正義",
+    "image": "11_JUSTICE.png",
+    "keywords": [
+      "公平",
+      "判断",
+      "バランス"
+    ],
+    "message_daily": "冷静に見て判断すれば、納得できる答えに近づくよ。"
+  },
+  {
+    "id": 12,
+    "number": "XII",
+    "name_en": "THE HANGED MAN",
+    "name_ja": "吊るされた男",
+    "image": "12_THE_HANGED_MAN.png",
+    "keywords": [
+      "停滞",
+      "視点転換",
+      "受容"
+    ],
+    "message_daily": "無理に進めず、見方を変えることが大事だよ。"
+  },
+  {
+    "id": 13,
+    "number": "XIII",
+    "name_en": "DEATH",
+    "name_ja": "死神",
+    "image": "13_DEATH.png",
+    "keywords": [
+      "終わり",
+      "手放し",
+      "再生"
+    ],
+    "message_daily": "古いものを手放すことで、新しい流れが入ってくるよ。"
+  },
+  {
+    "id": 14,
+    "number": "XIV",
+    "name_en": "TEMPERANCE",
+    "name_ja": "節制",
+    "image": "14_TEMPERANCE.png",
+    "keywords": [
+      "調和",
+      "節度",
+      "回復"
+    ],
+    "message_daily": "ちょうどいいペースを探すと安定していくよ。"
+  },
+  {
+    "id": 15,
+    "number": "XV",
+    "name_en": "THE DEVIL",
+    "name_ja": "悪魔",
+    "image": "15_THE_DEVIL.png",
+    "keywords": [
+      "執着",
+      "誘惑",
+      "束縛"
+    ],
+    "message_daily": "何に縛られているか気づくことが第一歩だよ。"
+  },
+  {
+    "id": 16,
+    "number": "XVI",
+    "name_en": "THE TOWER",
+    "name_ja": "塔",
+    "image": "16_THE_TOWER.png",
+    "keywords": [
+      "崩壊",
+      "変化",
+      "解放"
+    ],
+    "message_daily": "急な変化も、立て直しのきっかけになるよ。"
+  },
+  {
+    "id": 17,
+    "number": "XVII",
+    "name_en": "THE STAR",
+    "name_ja": "星",
+    "image": "17_THE_STAR.png",
+    "keywords": [
+      "希望",
+      "癒し",
+      "未来"
+    ],
+    "message_daily": "小さな希望が、次へ進む道しるべになるよ。"
+  },
+  {
+    "id": 18,
+    "number": "XVIII",
+    "name_en": "THE MOON",
+    "name_ja": "月",
+    "image": "18_THE_MOON.png",
+    "keywords": [
+      "不安",
+      "迷い",
+      "幻想"
+    ],
+    "message_daily": "結論を急がず、少し時間を置いてみて。"
+  },
+  {
+    "id": 19,
+    "number": "XIX",
+    "name_en": "THE SUN",
+    "name_ja": "太陽",
+    "image": "19_THE_SUN.png",
+    "keywords": [
+      "喜び",
+      "成功",
+      "素直さ"
+    ],
+    "message_daily": "明るく素直に動くことで、良い結果につながるよ。"
+  },
+  {
+    "id": 20,
+    "number": "XX",
+    "name_en": "JUDGEMENT",
+    "name_ja": "審判",
+    "image": "20_JUDGEMENT.png",
+    "keywords": [
+      "再生",
+      "気づき",
+      "呼びかけ"
+    ],
+    "message_daily": "再スタートのチャンスに応える時だよ。"
+  },
+  {
+    "id": 21,
+    "number": "XXI",
+    "name_en": "THE WORLD",
+    "name_ja": "世界",
+    "image": "21_THE_WORLD.png",
+    "keywords": [
+      "完成",
+      "達成",
+      "祝福"
+    ],
+    "message_daily": "積み重ねが形になり、次のステージへ進めるよ。"
+  }
+]
