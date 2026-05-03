@@ -19,27 +19,37 @@
         </p>
       </div>
 
-<button id="drawButton" class="card-back-button flip-card-button" type="button" aria-label="カードを引く">
-  <div id="flipCard" class="flip-card">
-    <div class="flip-card-inner">
-      <div class="flip-card-face flip-card-front">
-        <img
-          src="./assets/cards/card_back.png"
-          alt="カード裏面"
-          class="card-back"
-        />
-      </div>
-      <div class="flip-card-face flip-card-back">
-        <img
-          id="previewCardImage"
-          src="./assets/cards/card_back.png"
-          alt=""
-          class="card-back"
-        />
-      </div>
-    </div>
-  </div>
-</button>
+      <button
+        id="drawButton"
+        class="card-back-button flip-card-button"
+        type="button"
+        aria-label="カードを引く"
+      >
+        <div id="flipCard" class="flip-card">
+          <div class="flip-card-inner">
+            <div class="flip-card-face flip-card-front">
+              <img
+                src="./assets/cards/card_back.png"
+                alt="カード裏面"
+                class="card-back"
+              />
+            </div>
+
+            <div class="flip-card-face flip-card-back">
+              <img
+                id="previewCardImage"
+                src="./assets/cards/card_back.png"
+                alt=""
+                class="card-back"
+              />
+            </div>
+          </div>
+        </div>
+      </button>
+
+      <button id="backToTitleButton" class="sub-button" type="button">
+        タイトルへ戻る
+      </button>
     </section>
 
     <!-- 結果画面 -->
@@ -77,66 +87,72 @@
     const backToTitleButton = document.getElementById("backToTitleButton");
     const againButton = document.getElementById("againButton");
     const resultBackButton = document.getElementById("resultBackButton");
-    const flipCard = document.getElementById("flipCard");
-    const previewCardImage = document.getElementById("previewCardImage");
-    let selectedCard = null;
+
     const resultCardImage = document.getElementById("resultCardImage");
     const resultCardName = document.getElementById("resultCardName");
     const resultKeywords = document.getElementById("resultKeywords");
     const resultMessage = document.getElementById("resultMessage");
+
+    const flipCard = document.getElementById("flipCard");
+    const previewCardImage = document.getElementById("previewCardImage");
+
+    let isDrawing = false;
 
     async function loadCards() {
       const response = await fetch("./cards.json");
       if (!response.ok) {
         throw new Error("cards.json を読み込めませんでした。");
       }
+
       cards = await response.json();
     }
 
-function showDrawScreen() {
-  resultScreen.classList.add("hidden");
-  drawScreen.classList.remove("hidden");
+    function showDrawScreen() {
+      isDrawing = false;
 
-  flipCard.classList.remove("is-flipped");
-  previewCardImage.src = "./assets/cards/card_back.png";
-  previewCardImage.alt = "";
-}
+      resultScreen.classList.add("hidden");
+      drawScreen.classList.remove("hidden");
+
+      flipCard.classList.remove("is-flipped");
+      previewCardImage.src = "./assets/cards/card_back.png";
+      previewCardImage.alt = "";
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
 
     function showResultScreen() {
       drawScreen.classList.add("hidden");
       resultScreen.classList.remove("hidden");
+
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-function drawOneCard() {
-  if (!cards.length) return;
+    function drawOneCard() {
+      if (!cards.length || isDrawing) return;
 
-  const index = Math.floor(Math.random() * cards.length);
-  const card = cards[index];
-  selectedCard = card;
+      isDrawing = true;
 
-  previewCardImage.src = `./assets/cards/${card.image}`;
-  previewCardImage.alt = `${card.name_ja} / ${card.name_en}`;
+      const index = Math.floor(Math.random() * cards.length);
+      const card = cards[index];
 
-  resultCardImage.src = `./assets/cards/${card.image}`;
-  resultCardImage.alt = `${card.name_ja} / ${card.name_en}`;
+      previewCardImage.src = `./assets/cards/${card.image}`;
+      previewCardImage.alt = `${card.name_ja} / ${card.name_en}`;
 
-  resultCardName.textContent = `${card.number} ${card.name_en} / ${card.name_ja}`;
-  resultKeywords.textContent = card.keywords.join("・");
-  resultMessage.textContent = card.message_daily;
+      resultCardImage.src = `./assets/cards/${card.image}`;
+      resultCardImage.alt = `${card.name_ja} / ${card.name_en}`;
 
-  cardFlipSound.currentTime = 0;
-  cardFlipSound.play().catch(() => {});
+      resultCardName.textContent = `${card.number} ${card.name_en} / ${card.name_ja}`;
+      resultKeywords.textContent = card.keywords.join("・");
+      resultMessage.textContent = card.message_daily;
 
-  flipCard.classList.add("is-flipped");
+      flipCard.classList.add("is-flipped");
 
-  setTimeout(() => {
-    showResultScreen();
-  }, 950);
-}
-    drawButton.addEventListener("click", () => {
-      drawOneCard();
-    });
+      setTimeout(() => {
+        showResultScreen();
+      }, 950);
+    }
+
+    drawButton.addEventListener("click", drawOneCard);
 
     againButton.addEventListener("click", () => {
       showDrawScreen();

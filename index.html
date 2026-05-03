@@ -8,8 +8,9 @@
 </head>
 <body>
   <main class="app">
-    <section id="titleScreen" class="screen title-screen">
+    <section class="screen title-screen">
       <img
+        id="titleImage"
         src="./assets/ui/title.png"
         alt="タロット占い"
         class="title-image"
@@ -37,45 +38,34 @@
     </section>
   </main>
 
-<script>
-  const titleScreen = document.getElementById("titleScreen");
-  const oneCardButton = document.getElementById("oneCardButton");
-  const threeCardButton = document.getElementById("threeCardButton");
+  <script>
+    const titleImage = document.getElementById("titleImage");
+    const oneCardButton = document.getElementById("oneCardButton");
+    const threeCardButton = document.getElementById("threeCardButton");
 
-  const titleBgm = new Audio("./assets/audio/title_bgm.mp3");
-  titleBgm.loop = true;
-  titleBgm.volume = 0.35;
+    function glowAndMove(url) {
+      titleImage.src = "./assets/ui/title_glow.png";
+      document.body.classList.add("is-transitioning");
 
-  function startTitleBgm() {
-    titleBgm.play().catch(() => {
-      // ブラウザの自動再生制限で失敗する場合があるため無視
+      setTimeout(() => {
+        window.location.href = url;
+      }, 650);
+    }
+
+    oneCardButton.addEventListener("click", () => {
+      glowAndMove("./one.html");
     });
-  }
 
-  function glowAndMove(url) {
-    startTitleBgm();
+    threeCardButton.addEventListener("click", () => {
+      titleImage.src = "./assets/ui/title_glow.png";
+      document.body.classList.add("is-transitioning");
 
-    titleScreen.classList.add("title-glow");
-
-    setTimeout(() => {
-      window.location.href = url;
-    }, 900);
-  }
-
-  oneCardButton.addEventListener("click", () => {
-    glowAndMove("./one.html");
-  });
-
-  threeCardButton.addEventListener("click", () => {
-    startTitleBgm();
-    titleScreen.classList.add("title-glow");
-
-    setTimeout(() => {
-      alert("3枚占いは準備中です。まずは1枚占いで遊んでください。");
-      titleScreen.classList.remove("title-glow");
-    }, 700);
-  });
-
-  document.addEventListener("click", startTitleBgm, { once: true });
-</script></body>
+      setTimeout(() => {
+        alert("3枚占いは準備中です。まずは1枚占いで遊んでください。");
+        titleImage.src = "./assets/ui/title.png";
+        document.body.classList.remove("is-transitioning");
+      }, 650);
+    });
+  </script>
+</body>
 </html>
