@@ -8,43 +8,46 @@
 </head>
 <body>
   <main class="app">
-    <section id="titleScreen" class="screen title-screen">
-      <img src="./assets/ui/title.png" alt="タロット占い" class="title-image" />
+    <section class="screen title-screen">
+      <img
+        src="./assets/ui/title.png"
+        alt="タロット占い"
+        class="title-image"
+      />
 
-      <button id="oneCardButton" class="hotspot hotspot-one" aria-label="1枚占い">
+      <!-- 画像内の「1枚占い」ボタンに重ねる透明ボタン -->
+      <button
+        id="oneCardButton"
+        class="hotspot hotspot-one"
+        type="button"
+        aria-label="1枚占いを始める"
+      >
         1枚占い
       </button>
 
-      <button id="threeCardButton" class="hotspot hotspot-three" aria-label="3枚占い">
+      <!-- 画像内の「3枚占い」ボタンに重ねる透明ボタン -->
+      <button
+        id="threeCardButton"
+        class="hotspot hotspot-three"
+        type="button"
+        aria-label="3枚占いを始める"
+      >
         3枚占い
       </button>
     </section>
-
-    <section id="drawScreen" class="screen draw-screen hidden">
-      <h1>心の中で質問を思い浮かべてください</h1>
-      <p>準備ができたら、カードを引いてください。</p>
-
-      <button id="drawButton" class="card-back-button">
-        <img src="./assets/cards/card_back.png" alt="カード裏面" class="card-back" />
-      </button>
-
-      <button id="backToTitleButton" class="sub-button">戻る</button>
-    </section>
-
-    <section id="resultScreen" class="screen result-screen hidden">
-      <p class="result-label">今日のカード</p>
-
-      <img id="resultCardImage" src="" alt="" class="result-card" />
-
-      <h2 id="resultCardName"></h2>
-      <p id="resultKeywords" class="keywords"></p>
-      <p id="resultMessage" class="message"></p>
-
-      <button id="againButton" class="main-button">もう一度占う</button>
-      <button id="resultBackButton" class="sub-button">タイトルへ戻る</button>
-    </section>
   </main>
 
-  <script src="./script.js"></script>
+  <script>
+    const oneCardButton = document.getElementById("oneCardButton");
+    const threeCardButton = document.getElementById("threeCardButton");
+
+    oneCardButton.addEventListener("click", () => {
+      window.location.href = "./one.html";
+    });
+
+    threeCardButton.addEventListener("click", () => {
+      alert("3枚占いは準備中です。まずは1枚占いで遊んでください。");
+    });
+  </script>
 </body>
 </html>

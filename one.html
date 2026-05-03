@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>1枚占い | タロット占い</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <main class="app">
+    <!-- カードを引く画面 -->
+    <section id="drawScreen" class="screen draw-screen">
+      <div class="one-page-header">
+        <p class="small-title">つららの大アルカナ占い</p>
+        <h1>1枚占い</h1>
+        <p>
+          心の中で質問を思い浮かべてください。<br />
+          準備ができたら、カードを引いてください。
+        </p>
+      </div>
+
+      <button id="drawButton" class="card-back-button" type="button" aria-label="カードを引く">
+        <img
+          src="./assets/cards/card_back.png"
+          alt="カード裏面"
+          class="card-back"
+        />
+      </button>
+
+      <button id="backToTitleButton" class="sub-button" type="button">
+        タイトルへ戻る
+      </button>
+    </section>
+
+    <!-- 結果画面 -->
+    <section id="resultScreen" class="screen result-screen hidden">
+      <p class="result-label">今日のカード</p>
+
+      <img
+        id="resultCardImage"
+        src=""
+        alt=""
+        class="result-card"
+      />
+
+      <h2 id="resultCardName"></h2>
+      <p id="resultKeywords" class="keywords"></p>
+      <p id="resultMessage" class="message"></p>
+
+      <button id="againButton" class="main-button" type="button">
+        もう一度占う
+      </button>
+
+      <button id="resultBackButton" class="sub-button" type="button">
+        タイトルへ戻る
+      </button>
+    </section>
+  </main>
+
+  <script>
+    let cards = [];
+
+    const drawScreen = document.getElementById("drawScreen");
+    const resultScreen = document.getElementById("resultScreen");
+
+    const drawButton = document.getElementById("drawButton");
+    const backToTitleButton = document.getElementById("backToTitleButton");
+    const againButton = document.getElementById("againButton");
+    const resultBackButton = document.getElementById("resultBackButton");
+
+    const resultCardImage = document.getElementById("resultCardImage");
+    const resultCardName = document.getElementById("resultCardName");
+    const resultKeywords = document.getElementById("resultKeywords");
+    const resultMessage = document.getElementById("resultMessage");
+
+    async function loadCards() {
+      const response = await fetch("./cards.json");
+      if (!response.ok) {
+        throw new Error("cards.json を読み込めませんでした。");
+      }
+      cards = await response.json();
+    }
+
+    function showDrawScreen() {
+      resultScreen.classList.add("hidden");
+      drawScreen.classList.remove("hidden");
+    }
+
+    function showResultScreen() {
+      drawScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function drawOneCard() {
+      if (!cards.length) return;
+
+      const index = Math.floor(Math.random() * cards.length);
+      const card = cards[index];
+
+      resultCardImage.src = `./assets/cards/${card.image}`;
+      resultCardImage.alt = `${card.name_ja} / ${card.name_en}`;
+
+      resultCardName.textContent = `${card.number} ${card.name_en} / ${card.name_ja}`;
+      resultKeywords.textContent = card.keywords.join("・");
+      resultMessage.textContent = card.message_daily;
+
+      showResultScreen();
+    }
+
+    drawButton.addEventListener("click", () => {
+      drawOneCard();
+    });
+
+    againButton.addEventListener("click", () => {
+      showDrawScreen();
+    });
+
+    backToTitleButton.addEventListener("click", () => {
+      window.location.href = "./index.html";
+    });
+
+    resultBackButton.addEventListener("click", () => {
+      window.location.href = "./index.html";
+    });
+
+    loadCards().catch((error) => {
+      console.error(error);
+      alert("カードデータの読み込みに失敗しました。cards.json の配置を確認してください。");
+    });
+  </script>
+</body>
+</html>

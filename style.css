@@ -185,3 +185,64 @@ button {
     width: 34%;
   }
 }
+/* 既存の style.css の最後 */
+
+/* ここから追加 */
+.one-page-header {
+  margin: 32px auto 24px;
+  text-align: center;
+}
+
+.small-title {
+  margin: 0 0 8px;
+  color: #d9c17d;
+  font-size: clamp(13px, 3vw, 16px);
+  letter-spacing: 0.18em;
+}
+
+@media (max-width: 600px) {
+  html,
+  body {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  .app,
+  .screen,
+  .draw-screen,
+  .result-screen {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .draw-screen,
+  .result-screen {
+    padding: 24px 16px;
+  }
+
+  .card-back-button {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .card-back {
+    width: min(64vw, 280px);
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+  }
+
+  .result-card {
+    width: min(74vw, 320px);
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+  }
+
+  .main-button,
+  .sub-button {
+    width: min(82vw, 300px);
+    min-width: 0;
+  }
+}
