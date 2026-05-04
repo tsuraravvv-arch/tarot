@@ -16,7 +16,6 @@
         class="title-image"
       />
 
-      <!-- 画像内の「1枚占い」ボタンに重ねる透明ボタン -->
       <button
         id="oneCardButton"
         class="hotspot hotspot-one"
@@ -26,7 +25,6 @@
         1枚占い
       </button>
 
-      <!-- 画像内の「3枚占い」ボタンに重ねる透明ボタン -->
       <button
         id="threeCardButton"
         class="hotspot hotspot-three"
@@ -38,71 +36,69 @@
     </section>
   </main>
 
-<script>
-  const titleImage = document.getElementById("titleImage");
-  const oneCardButton = document.getElementById("oneCardButton");
-  const threeCardButton = document.getElementById("threeCardButton");
+  <script>
+    const titleImage = document.getElementById("titleImage");
+    const oneCardButton = document.getElementById("oneCardButton");
+    const threeCardButton = document.getElementById("threeCardButton");
 
-  const titleBgm = new Audio("./assets/audio/title_bgm.mp3");
-  titleBgm.loop = true;
-  titleBgm.volume = 0.35;
+    const titleBgm = new Audio("./assets/audio/title_bgm.mp3");
+    titleBgm.loop = true;
+    titleBgm.volume = 0.35;
 
-  const transitionSound = new Audio("./assets/audio/button_click.mp3");
-  transitionSound.volume = 0.8;
+    const transitionSound = new Audio("./assets/audio/button_click.mp3");
+    transitionSound.volume = 0.8;
 
-  let isMoving = false;
+    let isMoving = false;
 
-  function startTitleBgm() {
-    titleBgm.play().catch(() => {
-      // ブラウザの自動再生制限で失敗する場合があるため無視
+    function startTitleBgm() {
+      titleBgm.play().catch(() => {});
+    }
+
+    function playTransitionSound() {
+      transitionSound.currentTime = 0;
+      transitionSound.play().catch(() => {});
+    }
+
+    function glowAndMove(url) {
+      if (isMoving) return;
+      isMoving = true;
+
+      startTitleBgm();
+      playTransitionSound();
+
+      sessionStorage.setItem("startMysticBgm", "true");
+
+      titleImage.src = "./assets/ui/title_glow.png";
+      document.body.classList.add("is-transitioning");
+
+      setTimeout(() => {
+        window.location.href = url;
+      }, 2500);
+    }
+
+    oneCardButton.addEventListener("click", () => {
+      glowAndMove("./one.html");
     });
-  }
 
-  function playTransitionSound() {
-    transitionSound.currentTime = 0;
-    transitionSound.play().catch(() => {
-      // 音声再生に失敗しても画面遷移は止めない
+    threeCardButton.addEventListener("click", () => {
+      if (isMoving) return;
+      isMoving = true;
+
+      startTitleBgm();
+      playTransitionSound();
+
+      titleImage.src = "./assets/ui/title_glow.png";
+      document.body.classList.add("is-transitioning");
+
+      setTimeout(() => {
+        alert("3枚占いは準備中です。まずは1枚占いで遊んでください。");
+        titleImage.src = "./assets/ui/title.png";
+        document.body.classList.remove("is-transitioning");
+        isMoving = false;
+      }, 2500);
     });
-  }
 
-  function glowAndMove(url) {
-    if (isMoving) return;
-    isMoving = true;
-
-    startTitleBgm();
-    playTransitionSound();
-
-    titleImage.src = "./assets/ui/title_glow.png";
-    document.body.classList.add("is-transitioning");
-
-    setTimeout(() => {
-      window.location.href = url;
-    }, 2500);
-  }
-
-  oneCardButton.addEventListener("click", () => {
-    glowAndMove("./one.html");
-  });
-
-  threeCardButton.addEventListener("click", () => {
-    if (isMoving) return;
-    isMoving = true;
-
-    startTitleBgm();
-    playTransitionSound();
-
-    titleImage.src = "./assets/ui/title_glow.png";
-    document.body.classList.add("is-transitioning");
-
-    setTimeout(() => {
-      alert("3枚占いは準備中です。まずは1枚占いで遊んでください。");
-      titleImage.src = "./assets/ui/title.png";
-      document.body.classList.remove("is-transitioning");
-      isMoving = false;
-    }, 2500);
-  });
-
-  document.addEventListener("click", startTitleBgm, { once: true });
-</script>
+    document.addEventListener("click", startTitleBgm, { once: true });
+  </script>
 </body>
 </html>
