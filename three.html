@@ -374,9 +374,22 @@
 
       <div id="threeResultList" class="three-result-list"></div>
 
-      <button id="threeShareXButton" class="share-button" type="button">
-        Xで結果を共有
-      </button>
+      <div class="result-action-buttons">
+        <button id="threeSaveImageButton" class="result-action-button" type="button">
+          画像として保存
+        </button>
+        <button id="threeCopyImageButton" class="result-action-button" type="button">
+          画像をコピー
+        </button>
+        <button id="threeCopyTextButton" class="result-action-button" type="button">
+          テキストコピー
+        </button>
+        <button id="threeShareXButton" class="share-button" type="button">
+          Xに投稿
+        </button>
+      </div>
+      <p class="share-help-text">画像付きで投稿したい場合は、先に画像を保存またはコピーしてからXに添付してください。</p>
+      <div id="toastMessage" class="toast-message" aria-live="polite"></div>
 
       <button id="threeAgainButton" class="main-button" type="button">
         もう一度占う
@@ -388,6 +401,7 @@
     </section>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script>
     let cards = [];
     let cardsLoaded = false;
@@ -413,6 +427,10 @@
     const threeBackToTitleButton = document.getElementById("threeBackToTitleButton");
     const threeAgainButton = document.getElementById("threeAgainButton");
     const threeShareXButton = document.getElementById("threeShareXButton");
+    const threeSaveImageButton = document.getElementById("threeSaveImageButton");
+    const threeCopyImageButton = document.getElementById("threeCopyImageButton");
+    const threeCopyTextButton = document.getElementById("threeCopyTextButton");
+    const toastMessage = document.getElementById("toastMessage");
     const threeResultBackButton = document.getElementById("threeResultBackButton");
 
     const positionMeta = {
@@ -654,7 +672,7 @@
       }).join("");
 
       const scoreHtml = `
-        <div class="share-result-card result-fade-in" style="animation-delay: 0.05s;">
+        <div id="threeShareResultCard" class="share-result-card result-fade-in" style="animation-delay: 0.05s;">
           <p class="share-card-brand">氷洞つららのタロット占い</p>
           <div class="share-card-score" aria-label="総合運 ${totalScore}点">
             <span class="share-card-score-label">総合運</span>
@@ -715,6 +733,107 @@
       return window.location.origin + window.location.pathname.replace(/\/[^/]*$/, "/");
     }
 
+
+    function showToast(message) {
+      if (!toastMessage) {
+        alert(message);
+        return;
+      }
+      toastMessage.textContent = message;
+      toastMessage.classList.add("is-visible");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => {
+        toastMessage.classList.remove("is-visible");
+      }, 1800);
+    }
+
+    async function renderResultCardToCanvas(cardElementId) {
+      const target = document.getElementById(cardElementId);
+      if (!target || typeof html2canvas === "undefined") {
+        throw new Error("画像化に必要な処理を読み込めませんでした。");
+      }
+
+      return html2canvas(target, {
+        backgroundColor: null,
+        useCORS: true,
+        scale: Math.min(2, window.devicePixelRatio || 1.5)
+      });
+    }
+
+    async function saveThreeResultImage() {
+      try {
+        const canvas = await renderResultCardToCanvas("threeShareResultCard");
+        const link = document.createElement("a");
+        link.download = "tsurara-tarot-three-result.png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+        showToast("画像を保存しました");
+      } catch (error) {
+        console.error(error);
+        showToast("画像保存に失敗しました");
+      }
+    }
+
+    async function copyThreeResultImage() {
+      try {
+        if (!navigator.clipboard || typeof ClipboardItem === "undefined") {
+          await copyThreeResultText();
+          showToast("画像コピー非対応のため、テキストをコピーしました");
+          return;
+        }
+
+        const canvas = await renderResultCardToCanvas("threeShareResultCard");
+        canvas.toBlob(async (blob) => {
+          if (!blob) {
+            showToast("画像コピーに失敗しました");
+            return;
+          }
+          await navigator.clipboard.write([
+            new ClipboardItem({ "image/png": blob })
+          ]);
+          showToast("画像をコピーしました");
+        }, "image/png");
+      } catch (error) {
+        console.error(error);
+        await copyThreeResultText();
+        showToast("画像コピー非対応のため、テキストをコピーしました");
+      }
+    }
+
+    function getThreeResultShareText() {
+      if (!drawn.past || !drawn.present || !drawn.future) return "";
+
+      const order = ["past", "present", "future"];
+      const resultLines = order.map((position) => {
+        const item = drawn[position];
+        const card = item.card;
+        const orientationLabel = item.reversed ? "逆位置" : "正位置";
+        return `${positionMeta[position].label}：${card.name_en}（${orientationLabel}）`;
+      });
+
+      return [
+        "氷洞つららのタロット占い",
+        `総合運：${getTotalScore()}点`,
+        ...resultLines,
+        "",
+        "占ってみる↓",
+        getShareUrl()
+      ].join("\n");
+    }
+
+    async function copyThreeResultText() {
+      const text = getThreeResultShareText();
+      if (!text) return;
+
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("テキストをコピーしました");
+      } catch (error) {
+        console.error(error);
+        showToast("コピーに失敗しました");
+      }
+    }
+
     function shareThreeCardsToX() {
       if (!drawn.past || !drawn.present || !drawn.future) return;
 
@@ -729,8 +848,8 @@
       const totalScore = getTotalScore();
 
       const text = [
-        "🔮氷洞つららのタロット占い",
-        `総合運 ${totalScore}点`,
+        "氷洞つららのタロット占い",
+        `総合運：${totalScore}点`,
         ...resultLines,
         "占ってみる"
       ].join("\n");
@@ -788,6 +907,18 @@
           openThreeCard(button);
         }
       });
+    });
+
+    threeSaveImageButton.addEventListener("click", () => {
+      saveThreeResultImage();
+    });
+
+    threeCopyImageButton.addEventListener("click", () => {
+      copyThreeResultImage();
+    });
+
+    threeCopyTextButton.addEventListener("click", () => {
+      copyThreeResultText();
     });
 
     threeShareXButton.addEventListener("click", () => {
