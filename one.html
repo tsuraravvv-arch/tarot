@@ -230,9 +230,22 @@
       <p class="one-detail-result-title">くわしいメッセージ</p>
       <div id="categoryMessages" class="category-messages result-fade-in"></div>
 
-      <button id="shareXButton" class="share-button" type="button">
-        Xで結果を共有
-      </button>
+      <div class="result-action-buttons">
+        <button id="saveImageButton" class="result-action-button" type="button">
+          画像として保存
+        </button>
+        <button id="copyImageButton" class="result-action-button" type="button">
+          画像をコピー
+        </button>
+        <button id="copyTextButton" class="result-action-button" type="button">
+          テキストコピー
+        </button>
+        <button id="shareXButton" class="share-button" type="button">
+          Xに投稿
+        </button>
+      </div>
+      <p class="share-help-text">画像付きで投稿したい場合は、先に画像を保存またはコピーしてからXに添付してください。</p>
+      <div id="toastMessage" class="toast-message" aria-live="polite"></div>
 
       <button id="againButton" class="main-button" type="button">
         もう一度占う
@@ -244,6 +257,7 @@
     </section>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script>
     let cards = [];
     let isDrawing = false;
@@ -264,6 +278,10 @@
     const backToTitleButton = document.getElementById("backToTitleButton");
     const againButton = document.getElementById("againButton");
     const shareXButton = document.getElementById("shareXButton");
+    const saveImageButton = document.getElementById("saveImageButton");
+    const copyImageButton = document.getElementById("copyImageButton");
+    const copyTextButton = document.getElementById("copyTextButton");
+    const toastMessage = document.getElementById("toastMessage");
     const resultBackButton = document.getElementById("resultBackButton");
 
     const resultCardImage = document.getElementById("resultCardImage");
@@ -457,6 +475,98 @@
       return window.location.origin + window.location.pathname.replace(/\/[^/]*$/, "/");
     }
 
+
+    function showToast(message) {
+      if (!toastMessage) {
+        alert(message);
+        return;
+      }
+      toastMessage.textContent = message;
+      toastMessage.classList.add("is-visible");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => {
+        toastMessage.classList.remove("is-visible");
+      }, 1800);
+    }
+
+    async function renderResultCardToCanvas(cardElementId) {
+      const target = document.getElementById(cardElementId);
+      if (!target || typeof html2canvas === "undefined") {
+        throw new Error("画像化に必要な処理を読み込めませんでした。");
+      }
+
+      return html2canvas(target, {
+        backgroundColor: null,
+        useCORS: true,
+        scale: Math.min(2, window.devicePixelRatio || 1.5)
+      });
+    }
+
+    async function saveOneResultImage() {
+      try {
+        const canvas = await renderResultCardToCanvas("oneShareResultCard");
+        const link = document.createElement("a");
+        link.download = "tsurara-tarot-one-result.png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+        showToast("画像を保存しました");
+      } catch (error) {
+        console.error(error);
+        showToast("画像保存に失敗しました");
+      }
+    }
+
+    async function copyOneResultImage() {
+      try {
+        if (!navigator.clipboard || typeof ClipboardItem === "undefined") {
+          await copyOneResultText();
+          showToast("画像コピー非対応のため、テキストをコピーしました");
+          return;
+        }
+
+        const canvas = await renderResultCardToCanvas("oneShareResultCard");
+        canvas.toBlob(async (blob) => {
+          if (!blob) {
+            showToast("画像コピーに失敗しました");
+            return;
+          }
+          await navigator.clipboard.write([
+            new ClipboardItem({ "image/png": blob })
+          ]);
+          showToast("画像をコピーしました");
+        }, "image/png");
+      } catch (error) {
+        console.error(error);
+        await copyOneResultText();
+        showToast("画像コピー非対応のため、テキストをコピーしました");
+      }
+    }
+
+    function getOneResultShareText() {
+      if (!currentCard) return "";
+
+      return [
+        "氷洞つららのタロット占い",
+        `今日のカード：${currentCard.number} ${currentCard.name_en}`,
+        "",
+        "占ってみる↓",
+        getShareUrl()
+      ].join("\n");
+    }
+
+    async function copyOneResultText() {
+      const text = getOneResultShareText();
+      if (!text) return;
+
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("テキストをコピーしました");
+      } catch (error) {
+        console.error(error);
+        showToast("コピーに失敗しました");
+      }
+    }
+
     function shareOneCardToX() {
       if (!currentCard) return;
 
@@ -492,6 +602,18 @@
         event.preventDefault();
         drawOneCard();
       }
+    });
+
+    saveImageButton.addEventListener("click", () => {
+      saveOneResultImage();
+    });
+
+    copyImageButton.addEventListener("click", () => {
+      copyOneResultImage();
+    });
+
+    copyTextButton.addEventListener("click", () => {
+      copyOneResultText();
     });
 
     shareXButton.addEventListener("click", () => {
