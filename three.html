@@ -36,6 +36,32 @@
       font-size: 1.2rem;
       margin-left: 2px;
     }
+
+    .three-overall-comment-box {
+      margin: 0 auto 26px;
+      padding: 18px 20px;
+      max-width: 720px;
+      border: 1px solid rgba(214, 176, 93, 0.55);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.055);
+      box-shadow: 0 0 18px rgba(214, 176, 93, 0.12);
+      color: #fff4c8;
+      line-height: 1.85;
+      text-align: left;
+    }
+
+    .three-overall-comment-title {
+      margin: 0 0 8px;
+      color: #d9b96f;
+      font-size: 0.95rem;
+      letter-spacing: 0.08em;
+      text-align: center;
+    }
+
+    .three-overall-comment-text {
+      margin: 0;
+      font-size: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -193,6 +219,42 @@
       21: { up: [86, 90, 94], rev: [46, 44, 72] }
     };
 
+    const flowTable = {
+      0: { up: "growth", rev: "warning" },
+      1: { up: "growth", rev: "blocked" },
+      2: { up: "stable", rev: "confusion" },
+      3: { up: "positive", rev: "blocked" },
+      4: { up: "stable", rev: "warning" },
+      5: { up: "stable", rev: "confusion" },
+      6: { up: "growth", rev: "confusion" },
+      7: { up: "growth", rev: "blocked" },
+      8: { up: "growth", rev: "blocked" },
+      9: { up: "stable", rev: "blocked" },
+      10: { up: "change", rev: "blocked" },
+      11: { up: "stable", rev: "warning" },
+      12: { up: "blocked", rev: "blocked" },
+      13: { up: "change", rev: "blocked" },
+      14: { up: "stable", rev: "blocked" },
+      15: { up: "warning", rev: "blocked" },
+      16: { up: "change", rev: "blocked" },
+      17: { up: "hope", rev: "confusion" },
+      18: { up: "confusion", rev: "confusion" },
+      19: { up: "positive", rev: "blocked" },
+      20: { up: "growth", rev: "blocked" },
+      21: { up: "positive", rev: "blocked" }
+    };
+
+    const flowComments = {
+      positive: "全体的に明るい流れです。これまでの積み重ねが、前向きな結果につながっていきそうです。今の方向性を信じて進んでよさそうです。",
+      stable: "大きく崩れる流れではなさそうです。焦って変えようとするより、今あるものを丁寧に整えることで、良い結果につながりそうです。",
+      growth: "成長や前進の流れがあります。少し勇気を出して動くことで、状況が広がっていきそうです。小さな一歩を大切にしてみてください。",
+      change: "変化の流れが強く出ています。今までのやり方にこだわりすぎず、流れに合わせて選び直すことが大切になりそうです。",
+      warning: "少し注意が必要です。焦って決めるより、状況をよく見てから動くほうがよさそうです。無理をしすぎないことがポイントです。",
+      confusion: "迷いや不安が出やすい流れです。すぐに答えを出そうとせず、気持ちを整理する時間を持つとよさそうです。",
+      blocked: "今は少し停滞しやすい流れです。無理に進めるより、原因を見直すことが大切です。整えることで次の流れが見えてきそうです。",
+      hope: "希望のある流れです。すぐに結果が出なくても、前向きな兆しは見えています。あきらめずに続けることで道が開けそうです。"
+    };
+
     const positionScoreIndex = {
       past: 0,
       present: 1,
@@ -219,6 +281,20 @@
         presentScore * 0.4 +
         futureScore * 0.4
       );
+    }
+
+    function getFlowType(item) {
+      const cardNumber = Number(item.card.id);
+      const data = flowTable[cardNumber];
+
+      if (!data) return "stable";
+
+      return item.reversed ? data.rev : data.up;
+    }
+
+    function getOverallComment() {
+      const futureFlow = getFlowType(drawn.future);
+      return flowComments[futureFlow] || flowComments.stable;
     }
 
     function startMysticBgm() {
@@ -323,11 +399,16 @@
     function renderThreeResult() {
       const order = ["past", "present", "future"];
       const totalScore = getTotalScore();
+      const overallComment = getOverallComment();
 
       const scoreHtml = `
         <div class="three-score-box">
           <p class="three-score-label">総合運</p>
           <p class="three-score-value">${totalScore}<span class="three-score-unit">点</span></p>
+        </div>
+        <div class="three-overall-comment-box">
+          <p class="three-overall-comment-title">総合コメント</p>
+          <p class="three-overall-comment-text">${escapeHtml(overallComment)}</p>
         </div>
       `;
 
@@ -389,11 +470,13 @@
       });
 
       const totalScore = getTotalScore();
+      const overallComment = getOverallComment();
 
       const text = [
         "つららの大アルカナ占い",
         "3枚占いの結果",
         `総合運：${totalScore}点`,
+        `総合コメント：${overallComment}`,
         "",
         ...resultLines,
         "",
