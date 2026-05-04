@@ -607,6 +607,18 @@ body.is-transitioning::after {
   font-size: clamp(13px, 3.4vw, 16px);
 }
 
+.three-result-screen {
+  background:
+    radial-gradient(circle at center top, rgba(78, 78, 160, 0.34), transparent 46%),
+    radial-gradient(circle at center 32%, rgba(214, 176, 93, 0.16), transparent 42%),
+    linear-gradient(180deg, #050713, #02030a 72%);
+}
+
+.three-result-screen .result-label {
+  margin-top: 12px;
+  text-shadow: 0 0 14px rgba(217, 193, 125, 0.28);
+}
+
 .three-result-list {
   width: 100%;
   max-width: 100%;
@@ -619,14 +631,14 @@ body.is-transitioning::after {
   width: 100%;
   max-width: 100%;
   padding: 18px;
-  border: 1px solid rgba(215, 181, 94, 0.35);
-  border-radius: 18px;
+  border: 1px solid rgba(215, 181, 94, 0.42);
+  border-radius: 20px;
   background:
-    radial-gradient(circle at top left, rgba(70, 95, 170, 0.22), transparent 45%),
-    rgba(8, 10, 24, 0.72);
+    radial-gradient(circle at top left, rgba(70, 95, 170, 0.24), transparent 45%),
+    linear-gradient(180deg, rgba(12, 15, 34, 0.82), rgba(6, 7, 18, 0.78));
   box-shadow:
-    0 0 18px rgba(215, 181, 94, 0.08),
-    inset 0 0 18px rgba(255, 255, 255, 0.03);
+    0 0 22px rgba(215, 181, 94, 0.11),
+    inset 0 0 18px rgba(255, 255, 255, 0.035);
   text-align: left;
 }
 
