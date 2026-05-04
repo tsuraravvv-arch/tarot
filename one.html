@@ -221,31 +221,26 @@
         {
           key: "general",
           title: "全般",
-          emoji: "💫",
           icon: "./assets/icons/icon_general.png"
         },
         {
           key: "love",
           title: "恋愛",
-          emoji: "❤️",
           icon: "./assets/icons/icon_love.png"
         },
         {
           key: "work",
           title: "仕事・勉強",
-          emoji: "💼",
           icon: "./assets/icons/icon_work.png"
         },
         {
           key: "health",
           title: "健康",
-          emoji: "🧘",
           icon: "./assets/icons/icon_health.png"
         },
         {
           key: "point",
           title: "ワンポイント",
-          emoji: "🍀",
           icon: "./assets/icons/icon_point.png"
         }
       ];
@@ -264,7 +259,7 @@
                   alt=""
                   class="category-icon"
                 />
-                <h3>${section.emoji} ${section.title}</h3>
+                <h3>${section.title}</h3>
               </div>
               <p>${escapeHtml(text).replace(/\n/g, "<br>")}</p>
             </section>
