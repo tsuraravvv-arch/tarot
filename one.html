@@ -82,6 +82,27 @@
   let isDrawing = false;
   let cardsLoaded = false;
 
+const mysticBgm = new Audio("./assets/audio/mystic_bgm.mp3");
+mysticBgm.loop = true;
+mysticBgm.volume = 0.35;
+
+const cardFlipSound = new Audio("./assets/audio/card_flip.mp3");
+cardFlipSound.volume = 0.85;
+
+function startMysticBgm() {
+  mysticBgm.play().catch(() => {
+    // ブラウザの自動再生制限で失敗する場合があるため無視
+  });
+}
+
+function playCardFlipSound() {
+  cardFlipSound.currentTime = 0;
+  cardFlipSound.play().catch(() => {
+    // 効果音に失敗しても占い処理は止めない
+  });
+}
+
+document.addEventListener("click", startMysticBgm, { once: true });
   const drawScreen = document.getElementById("drawScreen");
   const resultScreen = document.getElementById("resultScreen");
 
@@ -168,7 +189,9 @@
     resultCardName.textContent = `${card.number} ${card.name_en} / ${card.name_ja}`;
     resultKeywords.textContent = card.keywords.join("・");
     resultMessage.textContent = card.message_daily;
-
+    
+    playCardFlipSound();
+    
     flipCard.classList.add("is-flipped");
 
     setTimeout(() => {
