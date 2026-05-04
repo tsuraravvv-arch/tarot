@@ -159,6 +159,8 @@
       resultScreen.classList.add("hidden");
       drawScreen.classList.remove("hidden");
 
+      drawButton.classList.remove("is-shuffling");
+
       if (flipCard) {
         flipCard.classList.remove("is-flipped");
       }
@@ -215,13 +217,17 @@
 
       renderCategoryMessages(card);
 
-      playCardFlipSound();
-
-      flipCard.classList.add("is-flipped");
+      drawButton.classList.add("is-shuffling");
 
       setTimeout(() => {
-        showResultScreen();
-      }, 1500);
+        drawButton.classList.remove("is-shuffling");
+        playCardFlipSound();
+        flipCard.classList.add("is-flipped");
+
+        setTimeout(() => {
+          showResultScreen();
+        }, 1200);
+      }, 950);
     }
 
     function renderCategoryMessages(card) {
