@@ -509,6 +509,28 @@
       ctx.closePath();
     }
 
+    const canvasFontFamily = '"Noto Serif JP", "Yu Mincho", "Hiragino Mincho ProN", "Times New Roman", serif';
+
+    function setCanvasFont(ctx, size, weight = "400") {
+      ctx.font = `${weight} ${size}px ${canvasFontFamily}`;
+    }
+
+    function fitCanvasFont(ctx, text, maxWidth, startSize, minSize = 18, weight = "400") {
+      let size = startSize;
+      const safeText = String(text || "");
+      while (size > minSize) {
+        setCanvasFont(ctx, size, weight);
+        if (ctx.measureText(safeText).width <= maxWidth) break;
+        size -= 2;
+      }
+      return size;
+    }
+
+    function fillTextFit(ctx, text, x, y, maxWidth, startSize, minSize = 18, weight = "400") {
+      fitCanvasFont(ctx, text, maxWidth, startSize, minSize, weight);
+      ctx.fillText(String(text || ""), x, y);
+    }
+
     function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 3) {
       const chars = String(text || "").split("");
       const lines = [];
@@ -558,7 +580,7 @@
       ctx.restore();
 
       ctx.fillStyle = "#d9bf70";
-      ctx.font = "38px serif";
+      setCanvasFont(ctx, 34);
       ctx.textAlign = "center";
       ctx.fillText("氷洞つららのタロット占い", canvas.width / 2, 105);
 
@@ -574,20 +596,18 @@
 
       ctx.textAlign = "left";
       ctx.fillStyle = "#fff8d8";
-      ctx.font = "30px serif";
+      setCanvasFont(ctx, 28);
       ctx.fillText("今日のカード", 430, 205);
 
       ctx.fillStyle = "#ffffff";
-      ctx.font = "42px serif";
-      ctx.fillText(`${currentCard.number} ${currentCard.name_en}`, 430, 275);
+      fillTextFit(ctx, `${currentCard.number} ${currentCard.name_en}`, 430, 275, 560, 38, 24);
 
       ctx.fillStyle = "#d8d1bd";
-      ctx.font = "30px serif";
+      setCanvasFont(ctx, 28);
       ctx.fillText(currentCard.name_ja, 430, 325);
 
       ctx.fillStyle = "#d9bf70";
-      ctx.font = "26px serif";
-      ctx.fillText((currentCard.keywords || []).join("・"), 430, 380);
+      fillTextFit(ctx, (currentCard.keywords || []).join("・"), 430, 380, 560, 25, 18);
 
       ctx.fillStyle = "rgba(8, 10, 24, 0.58)";
       drawRoundRect(ctx, 410, 430, 560, 155, 28);
@@ -597,11 +617,11 @@
       ctx.stroke();
 
       ctx.fillStyle = "#fff8d8";
-      ctx.font = "31px serif";
-      wrapCanvasText(ctx, currentCard.messages?.general || currentCard.message_daily || "", 445, 485, 490, 48, 2);
+      setCanvasFont(ctx, 28);
+      wrapCanvasText(ctx, currentCard.messages?.general || currentCard.message_daily || "", 445, 480, 490, 44, 3);
 
       ctx.fillStyle = "rgba(255, 248, 216, 0.75)";
-      ctx.font = "24px serif";
+      setCanvasFont(ctx, 23);
       ctx.textAlign = "center";
       ctx.fillText("大アルカナ占い", canvas.width / 2, 650);
 
