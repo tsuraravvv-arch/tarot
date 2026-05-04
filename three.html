@@ -654,7 +654,6 @@
 
       const scoreHtml = `
         <div id="threeShareResultCard" class="share-result-card result-fade-in" style="animation-delay: 0.05s;">
-          <p class="share-card-brand">氷洞つららのタロット占い</p>
           <div class="share-card-score" aria-label="総合運 ${totalScore}点">
             <span class="share-card-score-label">総合運</span>
             <span class="share-card-score-value">${totalScore}</span>
@@ -846,12 +845,9 @@
       ctx.lineWidth = 3;
       ctx.stroke();
 
-      ctx.fillStyle = "#d9bf70";
-      setCanvasFont(ctx, 34);
       ctx.textAlign = "center";
-      ctx.fillText("氷洞つららのタロット占い", canvas.width / 2, 105);
 
-      drawRoundRect(ctx, 345, 150, 390, 130, 64);
+      drawRoundRect(ctx, 345, 78, 390, 150, 70);
       ctx.fillStyle = "rgba(8, 10, 24, 0.58)";
       ctx.fill();
       ctx.strokeStyle = "#b99945";
@@ -861,17 +857,17 @@
       ctx.fillStyle = "#d9bf70";
       setCanvasFont(ctx, 27);
       ctx.textAlign = "left";
-      ctx.fillText("総合運", 405, 228);
+      ctx.fillText("総合運", 405, 166);
       ctx.fillStyle = "#fff8d8";
       setCanvasFont(ctx, 78, "700");
       ctx.textAlign = "center";
-      ctx.fillText(String(getTotalScore()), 540, 230);
+      ctx.fillText(String(getTotalScore()), 540, 168);
       setCanvasFont(ctx, 32);
-      ctx.fillText("点", 665, 230);
+      ctx.fillText("点", 665, 168);
 
       const order = ["past", "present", "future"];
       const xs = [116, 407, 698];
-      const y = 355;
+      const y = 300;
       const cardW = 160;
       const cardH = 240;
       ctx.textAlign = "center";
@@ -880,7 +876,7 @@
         const position = order[i];
         const item = drawn[position];
         const boxX = xs[i] - 52;
-        drawRoundRect(ctx, boxX, 310, 264, 360, 30);
+        drawRoundRect(ctx, boxX, 255, 264, 360, 30);
         ctx.fillStyle = "rgba(255, 255, 255, 0.055)";
         ctx.fill();
         ctx.strokeStyle = "rgba(185, 153, 69, 0.62)";
@@ -889,7 +885,7 @@
 
         ctx.fillStyle = "#d9bf70";
         setCanvasFont(ctx, 27);
-        ctx.fillText(positionMeta[position].label, xs[i] + cardW / 2, 352);
+        ctx.fillText(positionMeta[position].label, xs[i] + cardW / 2, 297);
         await drawCardImage(ctx, item, xs[i], y + 25, cardW, cardH);
         ctx.fillStyle = "#fff8d8";
         fillTextFit(ctx, item.card.name_en, xs[i] + cardW / 2, y + 300, 245, 24, 16);
@@ -898,7 +894,7 @@
         ctx.fillText(item.reversed ? "逆位置" : "正位置", xs[i] + cardW / 2, y + 340);
       }
 
-      drawRoundRect(ctx, 70, 720, 940, 140, 30);
+      drawRoundRect(ctx, 70, 665, 940, 140, 30);
       ctx.fillStyle = "rgba(8, 10, 24, 0.58)";
       ctx.fill();
       ctx.strokeStyle = "rgba(185, 153, 69, 0.9)";
@@ -908,7 +904,7 @@
       ctx.fillStyle = "#fff8d8";
       setCanvasFont(ctx, 28);
       ctx.textAlign = "left";
-      wrapCanvasText(ctx, getOverallComment(), 105, 775, 870, 44, 3);
+      wrapCanvasText(ctx, getOverallComment(), 105, 720, 870, 44, 3);
 
       return canvas;
     }
@@ -963,11 +959,11 @@
       });
 
       return [
-        "氷洞つららのタロット占い",
         `総合運：${getTotalScore()}点`,
         ...resultLines,
         "",
-        "占ってみる↓",
+        "占ってみる？",
+        "氷洞つららのタロット占い",
         getShareUrl()
       ].join("\n");
     }
@@ -999,10 +995,11 @@
       const totalScore = getTotalScore();
 
       const text = [
-        "氷洞つららのタロット占い",
         `総合運：${totalScore}点`,
         ...resultLines,
-        "占ってみる"
+        "",
+        "占ってみる？",
+        "氷洞つららのタロット占い"
       ].join("\n");
 
       const shareUrl = new URL("https://twitter.com/intent/tweet");
