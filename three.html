@@ -121,6 +121,183 @@
         transform: translateY(0);
       }
     }
+
+    .share-result-card {
+      position: relative;
+      margin: 18px auto 26px;
+      padding: 22px 18px 20px;
+      width: min(100%, 760px);
+      border: 1px solid rgba(214, 176, 93, 0.62);
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 232, 156, 0.24), transparent 36%),
+        radial-gradient(circle at 12% 18%, rgba(92, 132, 220, 0.18), transparent 34%),
+        linear-gradient(180deg, rgba(23, 18, 43, 0.96), rgba(5, 6, 18, 0.94));
+      box-shadow:
+        0 0 34px rgba(214, 176, 93, 0.2),
+        inset 0 0 24px rgba(255, 255, 255, 0.045);
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .share-result-card::before,
+    .share-result-card::after {
+      content: "✦";
+      position: absolute;
+      color: rgba(255, 235, 170, 0.22);
+      font-size: 56px;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .share-result-card::before {
+      top: 14px;
+      left: 18px;
+    }
+
+    .share-result-card::after {
+      right: 18px;
+      bottom: 14px;
+      transform: rotate(180deg);
+    }
+
+    .share-card-brand,
+    .share-card-score,
+    .share-card-mini-list,
+    .share-card-comment {
+      position: relative;
+      z-index: 1;
+    }
+
+    .share-card-brand {
+      margin: 0 0 14px;
+      color: #d9b96f;
+      font-size: clamp(0.98rem, 3.8vw, 1.15rem);
+      letter-spacing: 0.12em;
+    }
+
+    .share-card-score {
+      display: inline-flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 8px;
+      margin: 0 auto 18px;
+      padding: 12px 24px 14px;
+      min-width: 180px;
+      border: 1px solid rgba(214, 176, 93, 0.78);
+      border-radius: 999px;
+      background: rgba(20, 14, 32, 0.72);
+      box-shadow: 0 0 22px rgba(214, 176, 93, 0.22);
+    }
+
+    .share-card-score-label {
+      color: #d9b96f;
+      font-size: 0.9rem;
+      letter-spacing: 0.08em;
+      padding-bottom: 0.42em;
+    }
+
+    .share-card-score-value {
+      color: #fff4c8;
+      font-size: clamp(3.2rem, 12vw, 5rem);
+      font-weight: 700;
+      line-height: 0.9;
+      text-shadow: 0 0 18px rgba(255, 224, 140, 0.34);
+    }
+
+    .share-card-score-unit {
+      color: #fff4c8;
+      font-size: clamp(1.1rem, 4vw, 1.55rem);
+      padding-bottom: 0.32em;
+    }
+
+    .share-card-mini-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin: 0 auto 18px;
+      max-width: 560px;
+    }
+
+    .share-card-mini-item {
+      padding: 10px 8px 12px;
+      border: 1px solid rgba(214, 176, 93, 0.34);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.055);
+      box-shadow: inset 0 0 14px rgba(255, 255, 255, 0.03);
+      min-width: 0;
+    }
+
+    .share-card-mini-position {
+      margin: 0 0 7px;
+      color: #d9c17d;
+      font-size: clamp(0.78rem, 3.2vw, 0.92rem);
+      letter-spacing: 0.12em;
+    }
+
+    .share-card-mini-image {
+      display: block;
+      width: min(100%, 86px);
+      margin: 0 auto 8px;
+      border-radius: 8px;
+      filter: drop-shadow(0 0 12px rgba(214, 179, 89, 0.22));
+    }
+
+    .share-card-mini-name {
+      margin: 0;
+      color: #f8efd4;
+      font-size: clamp(0.72rem, 2.8vw, 0.9rem);
+      line-height: 1.35;
+      word-break: keep-all;
+    }
+
+    .share-card-mini-orientation {
+      margin: 4px 0 0;
+      color: rgba(248, 239, 212, 0.78);
+      font-size: 0.76rem;
+    }
+
+    .share-card-comment {
+      margin: 0 auto;
+      max-width: 620px;
+      padding: 14px 16px;
+      border: 1px solid rgba(214, 176, 93, 0.42);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff4c8;
+      font-size: clamp(0.95rem, 3.7vw, 1.06rem);
+      line-height: 1.75;
+      text-align: left;
+    }
+
+    .detail-result-title {
+      margin: 28px 0 0;
+      color: #d9b96f;
+      font-size: 0.95rem;
+      letter-spacing: 0.16em;
+      text-align: center;
+    }
+
+    @media (max-width: 520px) {
+      .share-result-card {
+        padding: 20px 12px 18px;
+        border-radius: 24px;
+      }
+
+      .share-card-mini-list {
+        gap: 7px;
+      }
+
+      .share-card-mini-item {
+        padding: 8px 5px 10px;
+        border-radius: 14px;
+      }
+
+      .share-card-mini-image {
+        width: min(100%, 68px);
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -460,17 +637,36 @@
       const totalScore = getTotalScore();
       const overallComment = getOverallComment();
 
+      const shareCardItemsHtml = order.map((position) => {
+        const item = drawn[position];
+        const card = item.card;
+        const orientationLabel = item.reversed ? "逆位置" : "正位置";
+        const imageClass = item.reversed ? "share-card-mini-image is-reversed-image" : "share-card-mini-image";
+
+        return `
+          <div class="share-card-mini-item">
+            <p class="share-card-mini-position">${positionMeta[position].label}</p>
+            <img src="./assets/cards/${card.image}" alt="${card.name_ja} / ${card.name_en}" class="${imageClass}" />
+            <p class="share-card-mini-name">${card.name_en}</p>
+            <p class="share-card-mini-orientation">${orientationLabel}</p>
+          </div>
+        `;
+      }).join("");
+
       const scoreHtml = `
-        <div class="three-result-summary result-fade-in" style="animation-delay: 0.05s;">
-          <div class="three-score-box">
-            <p class="three-score-label">総合運</p>
-            <p class="three-score-value">${totalScore}<span class="three-score-unit">点</span></p>
+        <div class="share-result-card result-fade-in" style="animation-delay: 0.05s;">
+          <p class="share-card-brand">氷洞つららのタロット占い</p>
+          <div class="share-card-score" aria-label="総合運 ${totalScore}点">
+            <span class="share-card-score-label">総合運</span>
+            <span class="share-card-score-value">${totalScore}</span>
+            <span class="share-card-score-unit">点</span>
           </div>
-          <div class="three-overall-comment-box">
-            <p class="three-overall-comment-title">総合コメント</p>
-            <p class="three-overall-comment-text">${escapeHtml(overallComment)}</p>
+          <div class="share-card-mini-list">
+            ${shareCardItemsHtml}
           </div>
+          <p class="share-card-comment">${escapeHtml(overallComment)}</p>
         </div>
+        <p class="detail-result-title result-fade-in" style="animation-delay: 0.14s;">カード別メッセージ</p>
       `;
 
       const cardHtml = order.map((position, index) => {
@@ -526,28 +722,17 @@
       const resultLines = order.map((position) => {
         const item = drawn[position];
         const card = item.card;
-        const orientationLabel = item.reversed ? "逆位置" : "正位置";
-        return `${positionMeta[position].label}：${card.number} ${card.name_en} / ${card.name_ja}（${orientationLabel}）`;
+        const orientationLabel = item.reversed ? "逆" : "正";
+        return `${positionMeta[position].label} ${card.name_en}（${orientationLabel}）`;
       });
 
       const totalScore = getTotalScore();
-      const overallComment = getOverallComment();
-
-      const shortComment = overallComment.length > 82
-        ? `${overallComment.slice(0, 82)}…`
-        : overallComment;
 
       const text = [
         "🔮氷洞つららのタロット占い",
-        `3枚占いの結果：総合運 ${totalScore}点`,
-        "",
-        shortComment,
-        "",
+        `総合運 ${totalScore}点`,
         ...resultLines,
-        "",
-        "占ってみる",
-        "",
-        "#タロット #占い"
+        "占ってみる"
       ].join("\n");
 
       const shareUrl = new URL("https://twitter.com/intent/tweet");
