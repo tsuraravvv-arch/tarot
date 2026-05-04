@@ -80,6 +80,10 @@
 
       <div id="threeResultList" class="three-result-list"></div>
 
+      <button id="threeShareXButton" class="share-button" type="button">
+        Xで結果を共有
+      </button>
+
       <button id="threeAgainButton" class="main-button" type="button">
         もう一度占う
       </button>
@@ -114,6 +118,7 @@
     const threeCardButtons = Array.from(document.querySelectorAll(".three-card-button"));
     const threeBackToTitleButton = document.getElementById("threeBackToTitleButton");
     const threeAgainButton = document.getElementById("threeAgainButton");
+    const threeShareXButton = document.getElementById("threeShareXButton");
     const threeResultBackButton = document.getElementById("threeResultBackButton");
 
     const positionMeta = {
@@ -269,6 +274,37 @@
       }).join("");
     }
 
+    function getShareUrl() {
+      return window.location.origin + window.location.pathname.replace(/\/[^/]*$/, "/");
+    }
+
+    function shareThreeCardsToX() {
+      if (!drawn.past || !drawn.present || !drawn.future) return;
+
+      const order = ["past", "present", "future"];
+      const resultLines = order.map((position) => {
+        const item = drawn[position];
+        const card = item.card;
+        const orientationLabel = item.reversed ? "逆位置" : "正位置";
+        return `${positionMeta[position].label}：${card.number} ${card.name_en} / ${card.name_ja}（${orientationLabel}）`;
+      });
+
+      const text = [
+        "つららの大アルカナ占い",
+        "3枚占いの結果",
+        "",
+        ...resultLines,
+        "",
+        "結果を見てみる"
+      ].join("\n");
+
+      const shareUrl = new URL("https://twitter.com/intent/tweet");
+      shareUrl.searchParams.set("text", text);
+      shareUrl.searchParams.set("url", getShareUrl());
+
+      window.open(shareUrl.toString(), "_blank", "noopener,noreferrer");
+    }
+
     function resetThreeReading() {
       drawn.past = null;
       drawn.present = null;
@@ -314,6 +350,10 @@
           openThreeCard(button);
         }
       });
+    });
+
+    threeShareXButton.addEventListener("click", () => {
+      shareThreeCardsToX();
     });
 
     threeAgainButton.addEventListener("click", () => {
