@@ -5,6 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>3枚占い | タロット占い</title>
   <link rel="stylesheet" href="./style.css" />
+  <style>
+    .three-score-box {
+      margin: 0 auto 22px;
+      padding: 18px 20px;
+      max-width: 420px;
+      border: 1px solid rgba(214, 176, 93, 0.75);
+      border-radius: 18px;
+      background: rgba(20, 14, 32, 0.72);
+      box-shadow: 0 0 18px rgba(214, 176, 93, 0.18);
+      text-align: center;
+    }
+
+    .three-score-label {
+      margin: 0 0 6px;
+      color: #d9b96f;
+      font-size: 0.95rem;
+      letter-spacing: 0.08em;
+    }
+
+    .three-score-value {
+      margin: 0;
+      color: #fff4c8;
+      font-size: 2.4rem;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    .three-score-unit {
+      font-size: 1.2rem;
+      margin-left: 2px;
+    }
+  </style>
 </head>
 <body>
   <main class="app">
@@ -136,6 +168,59 @@
       }
     };
 
+    const scoreTable = {
+      0: { up: [70, 76, 82], rev: [45, 42, 58] },
+      1: { up: [75, 84, 88], rev: [48, 44, 66] },
+      2: { up: [68, 72, 78], rev: [46, 43, 62] },
+      3: { up: [82, 88, 90], rev: [50, 47, 68] },
+      4: { up: [74, 78, 84], rev: [45, 42, 63] },
+      5: { up: [72, 76, 80], rev: [48, 45, 64] },
+      6: { up: [76, 82, 86], rev: [44, 42, 66] },
+      7: { up: [76, 84, 88], rev: [43, 40, 62] },
+      8: { up: [74, 78, 84], rev: [46, 44, 66] },
+      9: { up: [66, 68, 75], rev: [42, 39, 60] },
+      10: { up: [72, 80, 82], rev: [44, 42, 64] },
+      11: { up: [70, 72, 78], rev: [43, 40, 62] },
+      12: { up: [55, 52, 68], rev: [38, 36, 58] },
+      13: { up: [52, 50, 72], rev: [36, 34, 62] },
+      14: { up: [78, 84, 86], rev: [44, 42, 66] },
+      15: { up: [38, 35, 56], rev: [30, 28, 54] },
+      16: { up: [32, 28, 50], rev: [34, 32, 48] },
+      17: { up: [76, 82, 88], rev: [44, 42, 66] },
+      18: { up: [42, 38, 58], rev: [34, 32, 56] },
+      19: { up: [88, 94, 96], rev: [50, 48, 70] },
+      20: { up: [72, 80, 86], rev: [44, 42, 64] },
+      21: { up: [86, 90, 94], rev: [46, 44, 72] }
+    };
+
+    const positionScoreIndex = {
+      past: 0,
+      present: 1,
+      future: 2
+    };
+
+    function getCardScore(item, position) {
+      const cardNumber = Number(item.card.number);
+      const data = scoreTable[cardNumber];
+
+      if (!data) return 0;
+
+      const scoreList = item.reversed ? data.rev : data.up;
+      return scoreList[positionScoreIndex[position]];
+    }
+
+    function getTotalScore() {
+      const pastScore = getCardScore(drawn.past, "past");
+      const presentScore = getCardScore(drawn.present, "present");
+      const futureScore = getCardScore(drawn.future, "future");
+
+      return Math.round(
+        pastScore * 0.2 +
+        presentScore * 0.4 +
+        futureScore * 0.4
+      );
+    }
+
     function startMysticBgm() {
       mysticBgm.play().catch(() => {});
     }
@@ -237,8 +322,16 @@
 
     function renderThreeResult() {
       const order = ["past", "present", "future"];
+      const totalScore = getTotalScore();
 
-      threeResultList.innerHTML = order.map((position) => {
+      const scoreHtml = `
+        <div class="three-score-box">
+          <p class="three-score-label">総合運</p>
+          <p class="three-score-value">${totalScore}<span class="three-score-unit">点</span></p>
+        </div>
+      `;
+
+      const cardHtml = order.map((position) => {
         const item = drawn[position];
         const card = item.card;
         const orientationKey = item.reversed ? "reversed" : "upright";
@@ -276,6 +369,8 @@
           </section>
         `;
       }).join("");
+
+      threeResultList.innerHTML = scoreHtml + cardHtml;
     }
 
     function getShareUrl() {
@@ -293,9 +388,12 @@
         return `${positionMeta[position].label}：${card.number} ${card.name_en} / ${card.name_ja}（${orientationLabel}）`;
       });
 
+      const totalScore = getTotalScore();
+
       const text = [
         "つららの大アルカナ占い",
         "3枚占いの結果",
+        `総合運：${totalScore}点`,
         "",
         ...resultLines,
         "",
