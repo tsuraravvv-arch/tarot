@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3枚占い | タロット占い</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <main class="app">
+    <section id="threeDrawScreen" class="screen draw-screen three-draw-screen">
+      <div class="one-page-header">
+        <p class="small-title">つららの大アルカナ占い</p>
+        <h1>3枚占い</h1>
+        <p>
+          過去・現在・未来を表す3枚のカードを引きます。<br />
+          気になる位置のカードから、順番に開いてください。
+        </p>
+      </div>
+
+      <div class="three-card-board">
+        <div class="three-card-slot">
+          <p class="three-position-label">過去</p>
+          <div class="three-card-button" role="button" tabindex="0" data-position="past" aria-label="過去のカードを引く">
+            <div class="three-flip-card">
+              <div class="three-flip-card-inner">
+                <div class="three-flip-card-face three-flip-card-front">
+                  <img src="./assets/cards/card_back.png" alt="カード裏面" />
+                </div>
+                <div class="three-flip-card-face three-flip-card-back">
+                  <img src="./assets/cards/card_back.png" alt="" class="three-open-card-image" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="three-card-slot">
+          <p class="three-position-label">現在</p>
+          <div class="three-card-button" role="button" tabindex="0" data-position="present" aria-label="現在のカードを引く">
+            <div class="three-flip-card">
+              <div class="three-flip-card-inner">
+                <div class="three-flip-card-face three-flip-card-front">
+                  <img src="./assets/cards/card_back.png" alt="カード裏面" />
+                </div>
+                <div class="three-flip-card-face three-flip-card-back">
+                  <img src="./assets/cards/card_back.png" alt="" class="three-open-card-image" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="three-card-slot">
+          <p class="three-position-label">未来</p>
+          <div class="three-card-button" role="button" tabindex="0" data-position="future" aria-label="未来のカードを引く">
+            <div class="three-flip-card">
+              <div class="three-flip-card-inner">
+                <div class="three-flip-card-face three-flip-card-front">
+                  <img src="./assets/cards/card_back.png" alt="カード裏面" />
+                </div>
+                <div class="three-flip-card-face three-flip-card-back">
+                  <img src="./assets/cards/card_back.png" alt="" class="three-open-card-image" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p id="threeDrawHint" class="three-draw-hint">3枚すべて開くと、結果が表示されます。</p>
+
+      <button id="threeBackToTitleButton" class="sub-button" type="button">
+        タイトルへ戻る
+      </button>
+    </section>
+
+    <section id="threeResultScreen" class="screen result-screen three-result-screen hidden">
+      <p class="result-label">3枚占いの結果</p>
+
+      <div id="threeResultList" class="three-result-list"></div>
+
+      <button id="threeAgainButton" class="main-button" type="button">
+        もう一度占う
+      </button>
+
+      <button id="threeResultBackButton" class="sub-button" type="button">
+        タイトルへ戻る
+      </button>
+    </section>
+  </main>
+
+  <script>
+    let cards = [];
+    let cardsLoaded = false;
+    let availableDeck = [];
+    const drawn = {
+      past: null,
+      present: null,
+      future: null
+    };
+
+    const mysticBgm = new Audio("./assets/audio/mystic_bgm.mp3");
+    mysticBgm.loop = true;
+    mysticBgm.volume = 0.35;
+
+    const cardFlipSound = new Audio("./assets/audio/card_flip.mp3");
+    cardFlipSound.volume = 0.85;
+
+    const threeDrawScreen = document.getElementById("threeDrawScreen");
+    const threeResultScreen = document.getElementById("threeResultScreen");
+    const threeResultList = document.getElementById("threeResultList");
+
+    const threeCardButtons = Array.from(document.querySelectorAll(".three-card-button"));
+    const threeBackToTitleButton = document.getElementById("threeBackToTitleButton");
+    const threeAgainButton = document.getElementById("threeAgainButton");
+    const threeResultBackButton = document.getElementById("threeResultBackButton");
+
+    const positionMeta = {
+      past: {
+        label: "過去",
+        icon: "./assets/icons/icon_past.png"
+      },
+      present: {
+        label: "現在",
+        icon: "./assets/icons/icon_present.png"
+      },
+      future: {
+        label: "未来",
+        icon: "./assets/icons/icon_future.png"
+      }
+    };
+
+    function startMysticBgm() {
+      mysticBgm.play().catch(() => {});
+    }
+
+    function playCardFlipSound() {
+      cardFlipSound.currentTime = 0;
+      cardFlipSound.play().catch(() => {});
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const shouldStartBgm = sessionStorage.getItem("startMysticBgm");
+
+      if (shouldStartBgm === "true") {
+        sessionStorage.removeItem("startMysticBgm");
+        mysticBgm.play().catch(() => {});
+      }
+    });
+
+    document.addEventListener("click", startMysticBgm, { once: true });
+
+    async function loadCards() {
+      try {
+        const response = await fetch("./cards.json");
+
+        if (!response.ok) {
+          throw new Error("cards.json を読み込めませんでした。");
+        }
+
+        cards = await response.json();
+        cardsLoaded = true;
+        resetDeck();
+      } catch (error) {
+        console.error(error);
+        alert("カードデータの読み込みに失敗しました。cards.json の配置を確認してください。");
+      }
+    }
+
+    function resetDeck() {
+      availableDeck = [...cards];
+    }
+
+    function drawCardFromDeck() {
+      const index = Math.floor(Math.random() * availableDeck.length);
+      const card = availableDeck.splice(index, 1)[0];
+      const reversed = Math.random() < 0.5;
+
+      return {
+        card,
+        reversed
+      };
+    }
+
+    function openThreeCard(button) {
+      if (!cardsLoaded || !availableDeck.length) {
+        alert("カードデータを読み込み中です。少し待ってからもう一度押してください。");
+        return;
+      }
+
+      const position = button.dataset.position;
+
+      if (drawn[position]) return;
+
+      startMysticBgm();
+      playCardFlipSound();
+
+      const result = drawCardFromDeck();
+      drawn[position] = result;
+
+      const cardImage = button.querySelector(".three-open-card-image");
+      const flipCard = button.querySelector(".three-flip-card");
+
+      const imagePath = `./assets/cards/${result.card.image}`;
+
+      cardImage.src = imagePath;
+      cardImage.alt = `${positionMeta[position].label} ${result.card.name_ja} / ${result.card.name_en}`;
+      cardImage.classList.toggle("is-reversed-image", result.reversed);
+
+      flipCard.classList.add("is-flipped");
+      button.classList.add("is-opened");
+
+      if (drawn.past && drawn.present && drawn.future) {
+        setTimeout(() => {
+          showThreeResult();
+        }, 1200);
+      }
+    }
+
+    function showThreeResult() {
+      renderThreeResult();
+
+      threeDrawScreen.classList.add("hidden");
+      threeResultScreen.classList.remove("hidden");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderThreeResult() {
+      const order = ["past", "present", "future"];
+
+      threeResultList.innerHTML = order.map((position) => {
+        const item = drawn[position];
+        const card = item.card;
+        const orientationKey = item.reversed ? "reversed" : "upright";
+        const orientationLabel = item.reversed ? "逆位置" : "正位置";
+        const keywords = item.reversed && card.keywords_reversed
+          ? card.keywords_reversed
+          : card.keywords;
+        const message = card.three_card?.[position]?.[orientationKey] || card.messages?.general || card.message_daily;
+        const imageClass = item.reversed ? "three-result-card-image is-reversed-image" : "three-result-card-image";
+
+        return `
+          <section class="three-result-card">
+            <div class="three-result-heading">
+              <img src="${positionMeta[position].icon}" alt="" class="three-position-icon" />
+              <div>
+                <p class="three-result-position">${positionMeta[position].label}</p>
+                <p class="three-result-orientation">${orientationLabel}</p>
+              </div>
+            </div>
+
+            <div class="three-result-body">
+              <img
+                src="./assets/cards/${card.image}"
+                alt="${card.name_ja} / ${card.name_en}"
+                class="${imageClass}"
+              />
+
+              <div class="three-result-text">
+                <p class="result-card-number three-number">${card.number}</p>
+                <h2 class="result-card-title three-title">${card.name_en} / ${card.name_ja}</h2>
+                <p class="keywords">${keywords.join("・")}</p>
+                <p class="three-message">${escapeHtml(message).replace(/\n/g, "<br>")}</p>
+              </div>
+            </div>
+          </section>
+        `;
+      }).join("");
+    }
+
+    function resetThreeReading() {
+      drawn.past = null;
+      drawn.present = null;
+      drawn.future = null;
+      resetDeck();
+
+      threeResultList.innerHTML = "";
+      threeResultScreen.classList.add("hidden");
+      threeDrawScreen.classList.remove("hidden");
+
+      threeCardButtons.forEach((button) => {
+        button.classList.remove("is-opened");
+
+        const flipCard = button.querySelector(".three-flip-card");
+        const cardImage = button.querySelector(".three-open-card-image");
+
+        flipCard.classList.remove("is-flipped");
+        cardImage.src = "./assets/cards/card_back.png";
+        cardImage.alt = "";
+        cardImage.classList.remove("is-reversed-image");
+      });
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    threeCardButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        openThreeCard(button);
+      });
+
+      button.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openThreeCard(button);
+        }
+      });
+    });
+
+    threeAgainButton.addEventListener("click", () => {
+      resetThreeReading();
+    });
+
+    threeBackToTitleButton.addEventListener("click", () => {
+      window.location.href = "./index.html";
+    });
+
+    threeResultBackButton.addEventListener("click", () => {
+      window.location.href = "./index.html";
+    });
+
+    loadCards();
+  </script>
+</body>
+</html>
