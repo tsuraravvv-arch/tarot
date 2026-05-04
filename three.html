@@ -127,7 +127,7 @@
   <main class="app">
     <section id="threeDrawScreen" class="screen draw-screen three-draw-screen">
       <div class="one-page-header">
-        <p class="small-title">つららの大アルカナ占い</p>
+        <p class="small-title">大アルカナ占い</p>
         <h1>3枚占い</h1>
         <p>
           過去・現在・未来を表す3枚のカードを引きます。<br />
@@ -538,12 +538,14 @@
         : overallComment;
 
       const text = [
-        "🔮つららの大アルカナ占い",
+        "🔮氷洞つららのタロット占い",
         `3枚占いの結果：総合運 ${totalScore}点`,
         "",
         shortComment,
         "",
         ...resultLines,
+        "",
+        "占ってみる",
         "",
         "#タロット #占い"
       ].join("\n");
