@@ -91,10 +91,8 @@
       document.body.classList.add("is-transitioning");
 
       setTimeout(() => {
-        alert("3枚占いは準備中です。まずは1枚占いで遊んでください。");
-        titleImage.src = "./assets/ui/title.png";
-        document.body.classList.remove("is-transitioning");
-        isMoving = false;
+        sessionStorage.setItem("startMysticBgm", "true");
+        window.location.href = "./three.html";
       }, 2500);
     });
 
