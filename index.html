@@ -38,34 +38,71 @@
     </section>
   </main>
 
-  <script>
-    const titleImage = document.getElementById("titleImage");
-    const oneCardButton = document.getElementById("oneCardButton");
-    const threeCardButton = document.getElementById("threeCardButton");
+<script>
+  const titleImage = document.getElementById("titleImage");
+  const oneCardButton = document.getElementById("oneCardButton");
+  const threeCardButton = document.getElementById("threeCardButton");
 
-    function glowAndMove(url) {
-      titleImage.src = "./assets/ui/title_glow.png";
-      document.body.classList.add("is-transitioning");
+  const titleBgm = new Audio("./assets/audio/title_bgm.mp3");
+  titleBgm.loop = true;
+  titleBgm.volume = 0.35;
 
-      setTimeout(() => {
-        window.location.href = url;
-      }, 1400);
-    }
+  const transitionSound = new Audio("./assets/audio/button_click.mp3");
+  transitionSound.volume = 0.8;
 
-    oneCardButton.addEventListener("click", () => {
-      glowAndMove("./one.html");
+  let isMoving = false;
+
+  function startTitleBgm() {
+    titleBgm.play().catch(() => {
+      // ブラウザの自動再生制限で失敗する場合があるため無視
     });
+  }
 
-    threeCardButton.addEventListener("click", () => {
-      titleImage.src = "./assets/ui/title_glow.png";
-      document.body.classList.add("is-transitioning");
-
-      setTimeout(() => {
-        alert("3枚占いは準備中です。まずは1枚占いで遊んでください。");
-        titleImage.src = "./assets/ui/title.png";
-        document.body.classList.remove("is-transitioning");
-      }, 1400);
+  function playTransitionSound() {
+    transitionSound.currentTime = 0;
+    transitionSound.play().catch(() => {
+      // 音声再生に失敗しても画面遷移は止めない
     });
-  </script>
+  }
+
+  function glowAndMove(url) {
+    if (isMoving) return;
+    isMoving = true;
+
+    startTitleBgm();
+    playTransitionSound();
+
+    titleImage.src = "./assets/ui/title_glow.png";
+    document.body.classList.add("is-transitioning");
+
+    setTimeout(() => {
+      window.location.href = url;
+    }, 2500);
+  }
+
+  oneCardButton.addEventListener("click", () => {
+    glowAndMove("./one.html");
+  });
+
+  threeCardButton.addEventListener("click", () => {
+    if (isMoving) return;
+    isMoving = true;
+
+    startTitleBgm();
+    playTransitionSound();
+
+    titleImage.src = "./assets/ui/title_glow.png";
+    document.body.classList.add("is-transitioning");
+
+    setTimeout(() => {
+      alert("3枚占いは準備中です。まずは1枚占いで遊んでください。");
+      titleImage.src = "./assets/ui/title.png";
+      document.body.classList.remove("is-transitioning");
+      isMoving = false;
+    }, 2500);
+  });
+
+  document.addEventListener("click", startTitleBgm, { once: true });
+</script>
 </body>
 </html>
