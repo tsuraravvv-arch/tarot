@@ -227,18 +227,12 @@
         <p id="oneShareComment" class="one-share-comment"></p>
       </div>
 
-      <p class="one-detail-result-title">くわしいメッセージ</p>
-      <div id="categoryMessages" class="category-messages result-fade-in"></div>
-
-      <div class="result-action-buttons">
+      <div class="result-action-buttons share-tools-inline">
         <button id="saveImageButton" class="result-action-button" type="button">
           画像として保存
         </button>
         <button id="copyImageButton" class="result-action-button" type="button">
           画像をコピー
-        </button>
-        <button id="copyTextButton" class="result-action-button" type="button">
-          テキストコピー
         </button>
         <button id="shareXButton" class="share-button" type="button">
           Xに投稿
@@ -246,6 +240,9 @@
       </div>
       <p class="share-help-text">画像付きで投稿したい場合は、先に画像を保存またはコピーしてからXに添付してください。</p>
       <div id="toastMessage" class="toast-message" aria-live="polite"></div>
+
+      <p class="one-detail-result-title">くわしいメッセージ</p>
+      <div id="categoryMessages" class="category-messages result-fade-in"></div>
 
       <button id="againButton" class="main-button" type="button">
         もう一度占う
@@ -257,7 +254,6 @@
     </section>
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script>
     let cards = [];
     let isDrawing = false;
@@ -280,7 +276,6 @@
     const shareXButton = document.getElementById("shareXButton");
     const saveImageButton = document.getElementById("saveImageButton");
     const copyImageButton = document.getElementById("copyImageButton");
-    const copyTextButton = document.getElementById("copyTextButton");
     const toastMessage = document.getElementById("toastMessage");
     const resultBackButton = document.getElementById("resultBackButton");
 
@@ -489,22 +484,133 @@
       }, 1800);
     }
 
-    async function renderResultCardToCanvas(cardElementId) {
-      const target = document.getElementById(cardElementId);
-      if (!target || typeof html2canvas === "undefined") {
-        throw new Error("画像化に必要な処理を読み込めませんでした。");
+    function loadImageForCanvas(src) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+      });
+    }
+
+    function drawRoundRect(ctx, x, y, w, h, r) {
+      const radius = Math.min(r, w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + w - radius, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+      ctx.lineTo(x + w, y + h - radius);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+      ctx.lineTo(x + radius, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+    }
+
+    function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 3) {
+      const chars = String(text || "").split("");
+      const lines = [];
+      let line = "";
+      for (const ch of chars) {
+        const test = line + ch;
+        if (ctx.measureText(test).width > maxWidth && line) {
+          lines.push(line);
+          line = ch;
+          if (lines.length >= maxLines - 1) break;
+        } else {
+          line = test;
+        }
+      }
+      if (line) lines.push(line);
+      lines.slice(0, maxLines).forEach((lineText, index) => {
+        ctx.fillText(lineText, x, y + index * lineHeight);
+      });
+    }
+
+    async function renderResultCardToCanvas() {
+      if (!currentCard) {
+        throw new Error("占い結果がありません。");
       }
 
-      return html2canvas(target, {
-        backgroundColor: null,
-        useCORS: true,
-        scale: Math.min(2, window.devicePixelRatio || 1.5)
-      });
+      if (document.fonts && document.fonts.ready) {
+        await document.fonts.ready;
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = 1080;
+      canvas.height = 720;
+      const ctx = canvas.getContext("2d");
+
+      const bg = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      bg.addColorStop(0, "#202044");
+      bg.addColorStop(0.55, "#111225");
+      bg.addColorStop(1, "#090b18");
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.save();
+      drawRoundRect(ctx, 32, 32, canvas.width - 64, canvas.height - 64, 48);
+      ctx.strokeStyle = "#b99945";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.fillStyle = "#d9bf70";
+      ctx.font = "38px serif";
+      ctx.textAlign = "center";
+      ctx.fillText("氷洞つららのタロット占い", canvas.width / 2, 105);
+
+      const img = await loadImageForCanvas(`./assets/cards/${currentCard.image}`);
+      const cardX = 110;
+      const cardY = 170;
+      const cardW = 265;
+      const cardH = 398;
+      ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+      ctx.shadowBlur = 18;
+      ctx.drawImage(img, cardX, cardY, cardW, cardH);
+      ctx.shadowBlur = 0;
+
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#fff8d8";
+      ctx.font = "30px serif";
+      ctx.fillText("今日のカード", 430, 205);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "42px serif";
+      ctx.fillText(`${currentCard.number} ${currentCard.name_en}`, 430, 275);
+
+      ctx.fillStyle = "#d8d1bd";
+      ctx.font = "30px serif";
+      ctx.fillText(currentCard.name_ja, 430, 325);
+
+      ctx.fillStyle = "#d9bf70";
+      ctx.font = "26px serif";
+      ctx.fillText((currentCard.keywords || []).join("・"), 430, 380);
+
+      ctx.fillStyle = "rgba(8, 10, 24, 0.58)";
+      drawRoundRect(ctx, 410, 430, 560, 155, 28);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(185, 153, 69, 0.85)";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.fillStyle = "#fff8d8";
+      ctx.font = "31px serif";
+      wrapCanvasText(ctx, currentCard.messages?.general || currentCard.message_daily || "", 445, 485, 490, 48, 2);
+
+      ctx.fillStyle = "rgba(255, 248, 216, 0.75)";
+      ctx.font = "24px serif";
+      ctx.textAlign = "center";
+      ctx.fillText("大アルカナ占い", canvas.width / 2, 650);
+
+      return canvas;
     }
 
     async function saveOneResultImage() {
       try {
-        const canvas = await renderResultCardToCanvas("oneShareResultCard");
+        const canvas = await renderResultCardToCanvas();
         const link = document.createElement("a");
         link.download = "tsurara-tarot-one-result.png";
         link.href = canvas.toDataURL("image/png");
@@ -519,12 +625,11 @@
     async function copyOneResultImage() {
       try {
         if (!navigator.clipboard || typeof ClipboardItem === "undefined") {
-          await copyOneResultText();
-          showToast("画像コピー非対応のため、テキストをコピーしました");
+          showToast("このブラウザは画像コピーに対応していません");
           return;
         }
 
-        const canvas = await renderResultCardToCanvas("oneShareResultCard");
+        const canvas = await renderResultCardToCanvas();
         canvas.toBlob(async (blob) => {
           if (!blob) {
             showToast("画像コピーに失敗しました");
@@ -537,8 +642,7 @@
         }, "image/png");
       } catch (error) {
         console.error(error);
-        await copyOneResultText();
-        showToast("画像コピー非対応のため、テキストをコピーしました");
+        showToast("画像コピーに失敗しました");
       }
     }
 
@@ -610,10 +714,6 @@
 
     copyImageButton.addEventListener("click", () => {
       copyOneResultImage();
-    });
-
-    copyTextButton.addEventListener("click", () => {
-      copyOneResultText();
     });
 
     shareXButton.addEventListener("click", () => {
