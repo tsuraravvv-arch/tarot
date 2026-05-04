@@ -92,7 +92,7 @@ body.is-transitioning::after {
   background:
     radial-gradient(circle at center, rgba(255, 245, 190, 0.9), transparent 45%),
     rgba(255, 255, 255, 0.18);
-  animation: screenFlash 1.4s ease forwards;
+  animation: screenFlash 2.5s ease forwards;
   z-index: 9999;
 }
 
