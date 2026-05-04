@@ -675,3 +675,34 @@ body.is-transitioning::after {
     text-align: left;
   }
 }
+
+
+/* =========================
+   X共有ボタン
+========================= */
+
+.share-button {
+  display: block;
+  margin: 18px auto 0;
+  min-width: 220px;
+  padding: 14px 24px;
+  border: 1px solid rgba(120, 180, 255, 0.8);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(20, 35, 65, 0.95), rgba(5, 8, 18, 0.95));
+  color: #f5ead0;
+  box-shadow:
+    0 0 18px rgba(120, 180, 255, 0.18),
+    inset 0 0 12px rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+}
+
+.share-button:hover {
+  filter: brightness(1.12);
+}
+
+@media (max-width: 600px) {
+  .share-button {
+    width: min(82vw, 300px);
+    min-width: 0;
+  }
+}
