@@ -8,6 +8,7 @@
 </head>
 <body>
   <main class="app">
+    <!-- カードを引く画面 -->
     <section id="drawScreen" class="screen draw-screen">
       <div class="one-page-header">
         <p class="small-title">つららの大アルカナ占い</p>
@@ -18,11 +19,10 @@
         </p>
       </div>
 
-      <div
+      <button
         id="drawButton"
         class="card-back-button flip-card-button"
-        role="button"
-        tabindex="0"
+        type="button"
         aria-label="カードを引く"
       >
         <div id="flipCard" class="flip-card">
@@ -45,13 +45,14 @@
             </div>
           </div>
         </div>
-      </div>
+      </button>
 
       <button id="backToTitleButton" class="sub-button" type="button">
         タイトルへ戻る
       </button>
     </section>
 
+    <!-- 結果画面 -->
     <section id="resultScreen" class="screen result-screen hidden">
       <p class="result-label">今日のカード</p>
 
@@ -62,12 +63,9 @@
         class="result-card"
       />
 
-      <p id="resultCardNumber" class="result-card-number"></p>
-      <h2 id="resultCardName" class="result-card-title"></h2>
-
+      <h2 id="resultCardName"></h2>
       <p id="resultKeywords" class="keywords"></p>
-
-      <div id="categoryMessages" class="category-messages"></div>
+      <p id="resultMessage" class="message"></p>
 
       <button id="againButton" class="main-button" type="button">
         もう一度占う
@@ -80,228 +78,119 @@
   </main>
 
   <script>
-    let cards = [];
-    let isDrawing = false;
-    let cardsLoaded = false;
+  let cards = [];
+  let isDrawing = false;
+  let cardsLoaded = false;
 
-    const mysticBgm = new Audio("./assets/audio/mystic_bgm.mp3");
-    mysticBgm.loop = true;
-    mysticBgm.volume = 0.35;
+  const drawScreen = document.getElementById("drawScreen");
+  const resultScreen = document.getElementById("resultScreen");
 
-    const cardFlipSound = new Audio("./assets/audio/card_flip.mp3");
-    cardFlipSound.volume = 0.85;
+  const drawButton = document.getElementById("drawButton");
+  const backToTitleButton = document.getElementById("backToTitleButton");
+  const againButton = document.getElementById("againButton");
+  const resultBackButton = document.getElementById("resultBackButton");
 
-    const drawScreen = document.getElementById("drawScreen");
-    const resultScreen = document.getElementById("resultScreen");
+  const resultCardImage = document.getElementById("resultCardImage");
+  const resultCardName = document.getElementById("resultCardName");
+  const resultKeywords = document.getElementById("resultKeywords");
+  const resultMessage = document.getElementById("resultMessage");
 
-    const drawButton = document.getElementById("drawButton");
-    const backToTitleButton = document.getElementById("backToTitleButton");
-    const againButton = document.getElementById("againButton");
-    const resultBackButton = document.getElementById("resultBackButton");
+  const flipCard = document.getElementById("flipCard");
+  const previewCardImage = document.getElementById("previewCardImage");
 
-    const resultCardImage = document.getElementById("resultCardImage");
-    const resultCardNumber = document.getElementById("resultCardNumber");
-    const resultCardName = document.getElementById("resultCardName");
-    const resultKeywords = document.getElementById("resultKeywords");
-    const categoryMessages = document.getElementById("categoryMessages");
+  async function loadCards() {
+    try {
+      const response = await fetch("./cards.json");
 
-    const flipCard = document.getElementById("flipCard");
-    const previewCardImage = document.getElementById("previewCardImage");
-
-    function startMysticBgm() {
-      mysticBgm.play().catch(() => {});
-    }
-
-    function playCardFlipSound() {
-      cardFlipSound.currentTime = 0;
-      cardFlipSound.play().catch(() => {});
-    }
-
-    window.addEventListener("DOMContentLoaded", () => {
-      const shouldStartBgm = sessionStorage.getItem("startMysticBgm");
-
-      if (shouldStartBgm === "true") {
-        sessionStorage.removeItem("startMysticBgm");
-        mysticBgm.play().catch(() => {});
-      }
-    });
-
-    document.addEventListener("click", startMysticBgm, { once: true });
-
-    async function loadCards() {
-      try {
-        const response = await fetch("./cards.json");
-
-        if (!response.ok) {
-          throw new Error("cards.json を読み込めませんでした。");
-        }
-
-        cards = await response.json();
-        cardsLoaded = true;
-
-        console.log("cards loaded:", cards.length);
-      } catch (error) {
-        console.error(error);
-        alert("カードデータの読み込みに失敗しました。cards.json の配置を確認してください。");
-      }
-    }
-
-    function showDrawScreen() {
-      isDrawing = false;
-
-      resultScreen.classList.add("hidden");
-      drawScreen.classList.remove("hidden");
-
-      if (flipCard) {
-        flipCard.classList.remove("is-flipped");
+      if (!response.ok) {
+        throw new Error("cards.json を読み込めませんでした。");
       }
 
-      if (previewCardImage) {
-        previewCardImage.src = "./assets/cards/card_back.png";
-        previewCardImage.alt = "";
-      }
+      cards = await response.json();
+      cardsLoaded = true;
 
-      categoryMessages.innerHTML = "";
+      console.log("cards loaded:", cards.length);
+    } catch (error) {
+      console.error(error);
+      alert("カードデータの読み込みに失敗しました。cards.json の配置を確認してください。");
+    }
+  }
 
-      window.scrollTo({ top: 0, behavior: "smooth" });
+  function showDrawScreen() {
+    isDrawing = false;
+
+    resultScreen.classList.add("hidden");
+    drawScreen.classList.remove("hidden");
+
+    if (flipCard) {
+      flipCard.classList.remove("is-flipped");
     }
 
-    function showResultScreen() {
-      drawScreen.classList.add("hidden");
-      resultScreen.classList.remove("hidden");
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    if (previewCardImage) {
+      previewCardImage.src = "./assets/cards/card_back.png";
+      previewCardImage.alt = "";
     }
 
-    function drawOneCard() {
-      console.log("draw clicked");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
-      startMysticBgm();
+  function showResultScreen() {
+    drawScreen.classList.add("hidden");
+    resultScreen.classList.remove("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
-      if (!cardsLoaded || !cards.length) {
-        alert("カードデータを読み込み中です。少し待ってからもう一度押してください。");
-        return;
-      }
+  function drawOneCard() {
+    console.log("draw clicked");
 
-      if (isDrawing) {
-        return;
-      }
-
-      isDrawing = true;
-
-      const index = Math.floor(Math.random() * cards.length);
-      const card = cards[index];
-
-      const imagePath = `./assets/cards/${card.image}`;
-
-      previewCardImage.src = imagePath;
-      previewCardImage.alt = `${card.name_ja} / ${card.name_en}`;
-
-      resultCardImage.src = imagePath;
-      resultCardImage.alt = `${card.name_ja} / ${card.name_en}`;
-
-      resultCardNumber.textContent = card.number;
-      resultCardName.textContent = `${card.name_en} / ${card.name_ja}`;
-      resultKeywords.textContent = card.keywords.join("・");
-
-      renderCategoryMessages(card);
-
-      playCardFlipSound();
-
-      flipCard.classList.add("is-flipped");
-
-      setTimeout(() => {
-        showResultScreen();
-      }, 1500);
+    if (!cardsLoaded || !cards.length) {
+      alert("カードデータを読み込み中です。少し待ってからもう一度押してください。");
+      return;
     }
 
-    function renderCategoryMessages(card) {
-      const messages = card.messages || {};
-
-      const sections = [
-        {
-          key: "general",
-          title: "全般",
-          icon: "./assets/icons/icon_general.png"
-        },
-        {
-          key: "love",
-          title: "恋愛",
-          icon: "./assets/icons/icon_love.png"
-        },
-        {
-          key: "work",
-          title: "仕事・勉強",
-          icon: "./assets/icons/icon_work.png"
-        },
-        {
-          key: "health",
-          title: "健康",
-          icon: "./assets/icons/icon_health.png"
-        },
-        {
-          key: "point",
-          title: "ワンポイント",
-          icon: "./assets/icons/icon_point.png"
-        }
-      ];
-
-      categoryMessages.innerHTML = sections
-        .map((section) => {
-          const text = messages[section.key] || "";
-
-          if (!text) return "";
-
-          return `
-            <section class="category-card">
-              <div class="category-heading">
-                <img
-                  src="${section.icon}"
-                  alt=""
-                  class="category-icon"
-                />
-                <h3>${section.title}</h3>
-              </div>
-              <p>${escapeHtml(text).replace(/\n/g, "<br>")}</p>
-            </section>
-          `;
-        })
-        .join("");
+    if (isDrawing) {
+      return;
     }
 
-    function escapeHtml(text) {
-      return String(text)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
+    isDrawing = true;
 
-    drawButton.addEventListener("click", () => {
-      console.log("カードがクリックされました");
-      drawOneCard();
-    });
+    const index = Math.floor(Math.random() * cards.length);
+    const card = cards[index];
 
-    drawButton.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        drawOneCard();
-      }
-    });
+    const imagePath = `./assets/cards/${card.image}`;
 
-    againButton.addEventListener("click", () => {
-      showDrawScreen();
-    });
+    previewCardImage.src = imagePath;
+    previewCardImage.alt = `${card.name_ja} / ${card.name_en}`;
 
-    backToTitleButton.addEventListener("click", () => {
-      window.location.href = "./index.html";
-    });
+    resultCardImage.src = imagePath;
+    resultCardImage.alt = `${card.name_ja} / ${card.name_en}`;
 
-    resultBackButton.addEventListener("click", () => {
-      window.location.href = "./index.html";
-    });
+    resultCardName.textContent = `${card.number} ${card.name_en} / ${card.name_ja}`;
+    resultKeywords.textContent = card.keywords.join("・");
+    resultMessage.textContent = card.message_daily;
 
-    loadCards();
-  </script>
+    flipCard.classList.add("is-flipped");
+
+    setTimeout(() => {
+      showResultScreen();
+    }, 1200);
+  }
+
+  drawButton.addEventListener("click", drawOneCard);
+
+  againButton.addEventListener("click", () => {
+    showDrawScreen();
+  });
+
+  backToTitleButton.addEventListener("click", () => {
+    window.location.href = "./index.html";
+  });
+
+  resultBackButton.addEventListener("click", () => {
+    window.location.href = "./index.html";
+  });
+
+  loadCards();
+</script>
 </body>
 </html>
