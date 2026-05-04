@@ -200,7 +200,7 @@
     };
 
     function getCardScore(item, position) {
-      const cardNumber = Number(item.card.number);
+      const cardNumber = Number(item.card.id);
       const data = scoreTable[cardNumber];
 
       if (!data) return 0;
