@@ -209,7 +209,6 @@
       <p class="result-label">1枚占いの結果</p>
 
       <div id="oneShareResultCard" class="one-share-result-card result-fade-in">
-        <p class="one-share-brand">氷洞つららのタロット占い</p>
         <div class="one-share-card-main">
           <img
             id="resultCardImage"
@@ -579,16 +578,11 @@
       ctx.stroke();
       ctx.restore();
 
-      ctx.fillStyle = "#d9bf70";
-      setCanvasFont(ctx, 34);
-      ctx.textAlign = "center";
-      ctx.fillText("氷洞つららのタロット占い", canvas.width / 2, 105);
-
       const img = await loadImageForCanvas(`./assets/cards/${currentCard.image}`);
       const cardX = 110;
-      const cardY = 170;
-      const cardW = 265;
-      const cardH = 398;
+      const cardY = 120;
+      const cardW = 285;
+      const cardH = 428;
       ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
       ctx.shadowBlur = 18;
       ctx.drawImage(img, cardX, cardY, cardW, cardH);
@@ -597,20 +591,20 @@
       ctx.textAlign = "left";
       ctx.fillStyle = "#fff8d8";
       setCanvasFont(ctx, 28);
-      ctx.fillText("今日のカード", 430, 205);
+      ctx.fillText("今日のカード", 445, 165);
 
       ctx.fillStyle = "#ffffff";
-      fillTextFit(ctx, `${currentCard.number} ${currentCard.name_en}`, 430, 275, 560, 38, 24);
+      fillTextFit(ctx, `${currentCard.number} ${currentCard.name_en}`, 445, 245, 545, 42, 26);
 
       ctx.fillStyle = "#d8d1bd";
       setCanvasFont(ctx, 28);
-      ctx.fillText(currentCard.name_ja, 430, 325);
+      ctx.fillText(currentCard.name_ja, 445, 305);
 
       ctx.fillStyle = "#d9bf70";
-      fillTextFit(ctx, (currentCard.keywords || []).join("・"), 430, 380, 560, 25, 18);
+      fillTextFit(ctx, (currentCard.keywords || []).join("・"), 445, 360, 545, 26, 18);
 
       ctx.fillStyle = "rgba(8, 10, 24, 0.58)";
-      drawRoundRect(ctx, 410, 430, 560, 155, 28);
+      drawRoundRect(ctx, 420, 415, 550, 165, 28);
       ctx.fill();
       ctx.strokeStyle = "rgba(185, 153, 69, 0.85)";
       ctx.lineWidth = 2;
@@ -618,7 +612,7 @@
 
       ctx.fillStyle = "#fff8d8";
       setCanvasFont(ctx, 28);
-      wrapCanvasText(ctx, currentCard.messages?.general || currentCard.message_daily || "", 445, 480, 490, 44, 3);
+      wrapCanvasText(ctx, currentCard.messages?.general || currentCard.message_daily || "", 455, 470, 485, 42, 3);
 
       ctx.fillStyle = "rgba(255, 248, 216, 0.75)";
       setCanvasFont(ctx, 23);
@@ -670,10 +664,10 @@
       if (!currentCard) return "";
 
       return [
-        "氷洞つららのタロット占い",
         `今日のカード：${currentCard.number} ${currentCard.name_en}`,
         "",
-        "占ってみる↓",
+        "占ってみる？",
+        "氷洞つららのタロット占い",
         getShareUrl()
       ].join("\n");
     }
@@ -695,9 +689,10 @@
       if (!currentCard) return;
 
       const text = [
-        "氷洞つららのタロット占い",
         `今日のカード：${currentCard.number} ${currentCard.name_en}`,
-        "占ってみる"
+        "",
+        "占ってみる？",
+        "氷洞つららのタロット占い"
       ].join("\n");
 
       const shareUrl = new URL("https://twitter.com/intent/tweet");
