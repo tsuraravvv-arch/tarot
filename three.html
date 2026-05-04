@@ -766,6 +766,28 @@
       ctx.closePath();
     }
 
+    const canvasFontFamily = '"Noto Serif JP", "Yu Mincho", "Hiragino Mincho ProN", "Times New Roman", serif';
+
+    function setCanvasFont(ctx, size, weight = "400") {
+      ctx.font = `${weight} ${size}px ${canvasFontFamily}`;
+    }
+
+    function fitCanvasFont(ctx, text, maxWidth, startSize, minSize = 18, weight = "400") {
+      let size = startSize;
+      const safeText = String(text || "");
+      while (size > minSize) {
+        setCanvasFont(ctx, size, weight);
+        if (ctx.measureText(safeText).width <= maxWidth) break;
+        size -= 2;
+      }
+      return size;
+    }
+
+    function fillTextFit(ctx, text, x, y, maxWidth, startSize, minSize = 18, weight = "400") {
+      fitCanvasFont(ctx, text, maxWidth, startSize, minSize, weight);
+      ctx.fillText(String(text || ""), x, y);
+    }
+
     function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 3) {
       const chars = String(text || "").split("");
       const lines = [];
@@ -828,7 +850,7 @@
       ctx.stroke();
 
       ctx.fillStyle = "#d9bf70";
-      ctx.font = "38px serif";
+      setCanvasFont(ctx, 34);
       ctx.textAlign = "center";
       ctx.fillText("氷洞つららのタロット占い", canvas.width / 2, 105);
 
@@ -840,14 +862,14 @@
       ctx.stroke();
 
       ctx.fillStyle = "#d9bf70";
-      ctx.font = "30px serif";
+      setCanvasFont(ctx, 27);
       ctx.textAlign = "left";
       ctx.fillText("総合運", 405, 228);
       ctx.fillStyle = "#fff8d8";
-      ctx.font = "86px serif";
+      setCanvasFont(ctx, 78, "700");
       ctx.textAlign = "center";
       ctx.fillText(String(getTotalScore()), 540, 230);
-      ctx.font = "36px serif";
+      setCanvasFont(ctx, 32);
       ctx.fillText("点", 665, 230);
 
       const order = ["past", "present", "future"];
@@ -869,14 +891,13 @@
         ctx.stroke();
 
         ctx.fillStyle = "#d9bf70";
-        ctx.font = "30px serif";
+        setCanvasFont(ctx, 27);
         ctx.fillText(positionMeta[position].label, xs[i] + cardW / 2, 352);
         await drawCardImage(ctx, item, xs[i], y + 25, cardW, cardH);
         ctx.fillStyle = "#fff8d8";
-        ctx.font = "28px serif";
-        ctx.fillText(item.card.name_en, xs[i] + cardW / 2, y + 300);
+        fillTextFit(ctx, item.card.name_en, xs[i] + cardW / 2, y + 300, 245, 24, 16);
         ctx.fillStyle = "#d8d1bd";
-        ctx.font = "24px serif";
+        setCanvasFont(ctx, 21);
         ctx.fillText(item.reversed ? "逆位置" : "正位置", xs[i] + cardW / 2, y + 340);
       }
 
@@ -888,9 +909,9 @@
       ctx.stroke();
 
       ctx.fillStyle = "#fff8d8";
-      ctx.font = "34px serif";
+      setCanvasFont(ctx, 28);
       ctx.textAlign = "left";
-      wrapCanvasText(ctx, getOverallComment(), 105, 780, 870, 52, 2);
+      wrapCanvasText(ctx, getOverallComment(), 105, 775, 870, 44, 3);
 
       return canvas;
     }
