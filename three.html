@@ -373,16 +373,6 @@
       <p class="result-label">3枚占いの結果</p>
 
       <div id="threeResultList" class="three-result-list"></div>
-
-      <div class="result-action-buttons">
-        <button id="threeSaveImageButton" class="result-action-button" type="button">
-          画像として保存
-        </button>
-        <button id="threeCopyImageButton" class="result-action-button" type="button">
-          画像をコピー
-        </button>
-      </div>
-      <p class="share-help-text">画像付きで投稿したい場合は、先に画像を保存またはコピーしてからXに添付してください。</p>
       <div id="toastMessage" class="toast-message" aria-live="polite"></div>
 
       <button id="threeAgainButton" class="main-button" type="button">
@@ -676,8 +666,15 @@
           <p class="share-card-comment">${escapeHtml(overallComment)}</p>
         </div>
         <div class="result-action-buttons share-tools-inline result-fade-in" style="animation-delay: 0.12s;">
+          <button id="threeSaveImageButton" class="result-action-button" type="button" onclick="saveThreeResultImage()">
+            画像として保存
+          </button>
+          <button id="threeCopyImageButton" class="result-action-button" type="button" onclick="copyThreeResultImage()">
+            画像をコピー
+          </button>
           <button class="share-button" type="button" onclick="shareThreeCardsToX()">Xに投稿</button>
         </div>
+        <p class="share-help-text result-fade-in" style="animation-delay: 0.13s;">画像付きで投稿したい場合は、先に画像を保存またはコピーしてからXに添付してください。</p>
         <p class="detail-result-title result-fade-in" style="animation-delay: 0.14s;">カード別メッセージ</p>
       `;
 
@@ -1063,13 +1060,17 @@
       });
     });
 
-    threeSaveImageButton.addEventListener("click", () => {
-      saveThreeResultImage();
-    });
+    if (threeSaveImageButton) {
+      threeSaveImageButton.addEventListener("click", () => {
+        saveThreeResultImage();
+      });
+    }
 
-    threeCopyImageButton.addEventListener("click", () => {
-      copyThreeResultImage();
-    });
+    if (threeCopyImageButton) {
+      threeCopyImageButton.addEventListener("click", () => {
+        copyThreeResultImage();
+      });
+    }
 
     threeAgainButton.addEventListener("click", () => {
       resetThreeReading();
