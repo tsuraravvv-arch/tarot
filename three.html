@@ -199,28 +199,32 @@
       if (drawn[position]) return;
 
       startMysticBgm();
-      playCardFlipSound();
+      button.classList.add("is-shuffling");
 
-      const result = drawCardFromDeck();
-      drawn[position] = result;
+      setTimeout(() => {
+        const result = drawCardFromDeck();
+        drawn[position] = result;
 
-      const cardImage = button.querySelector(".three-open-card-image");
-      const flipCard = button.querySelector(".three-flip-card");
+        const cardImage = button.querySelector(".three-open-card-image");
+        const flipCard = button.querySelector(".three-flip-card");
 
-      const imagePath = `./assets/cards/${result.card.image}`;
+        const imagePath = `./assets/cards/${result.card.image}`;
 
-      cardImage.src = imagePath;
-      cardImage.alt = `${positionMeta[position].label} ${result.card.name_ja} / ${result.card.name_en}`;
-      cardImage.classList.toggle("is-reversed-image", result.reversed);
+        cardImage.src = imagePath;
+        cardImage.alt = `${positionMeta[position].label} ${result.card.name_ja} / ${result.card.name_en}`;
+        cardImage.classList.toggle("is-reversed-image", result.reversed);
 
-      flipCard.classList.add("is-flipped");
-      button.classList.add("is-opened");
+        button.classList.remove("is-shuffling");
+        playCardFlipSound();
+        flipCard.classList.add("is-flipped");
+        button.classList.add("is-opened");
 
-      if (drawn.past && drawn.present && drawn.future) {
-        setTimeout(() => {
-          showThreeResult();
-        }, 1200);
-      }
+        if (drawn.past && drawn.present && drawn.future) {
+          setTimeout(() => {
+            showThreeResult();
+          }, 1200);
+        }
+      }, 850);
     }
 
     function showThreeResult() {
@@ -317,6 +321,7 @@
 
       threeCardButtons.forEach((button) => {
         button.classList.remove("is-opened");
+        button.classList.remove("is-shuffling");
 
         const flipCard = button.querySelector(".three-flip-card");
         const cardImage = button.querySelector(".three-open-card-image");
