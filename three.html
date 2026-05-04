@@ -6,61 +6,120 @@
   <title>3枚占い | タロット占い</title>
   <link rel="stylesheet" href="./style.css" />
   <style>
+    .three-result-summary {
+      position: relative;
+      margin: 18px auto 30px;
+      padding: 22px 16px 20px;
+      max-width: 760px;
+      border: 1px solid rgba(214, 176, 93, 0.42);
+      border-radius: 26px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 232, 156, 0.22), transparent 38%),
+        linear-gradient(180deg, rgba(25, 20, 42, 0.9), rgba(7, 8, 22, 0.88));
+      box-shadow:
+        0 0 34px rgba(214, 176, 93, 0.18),
+        inset 0 0 24px rgba(255, 255, 255, 0.045);
+      overflow: hidden;
+    }
+
+    .three-result-summary::before,
+    .three-result-summary::after {
+      content: "✦";
+      position: absolute;
+      color: rgba(255, 235, 170, 0.28);
+      font-size: 54px;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .three-result-summary::before {
+      top: 12px;
+      left: 18px;
+    }
+
+    .three-result-summary::after {
+      right: 18px;
+      bottom: 10px;
+      transform: rotate(180deg);
+    }
+
     .three-score-box {
-      margin: 0 auto 22px;
+      position: relative;
+      z-index: 1;
+      margin: 0 auto 18px;
       padding: 18px 20px;
-      max-width: 420px;
-      border: 1px solid rgba(214, 176, 93, 0.75);
-      border-radius: 18px;
-      background: rgba(20, 14, 32, 0.72);
-      box-shadow: 0 0 18px rgba(214, 176, 93, 0.18);
+      max-width: 460px;
+      border: 1px solid rgba(214, 176, 93, 0.82);
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at center top, rgba(255, 239, 178, 0.16), transparent 54%),
+        rgba(20, 14, 32, 0.78);
+      box-shadow:
+        0 0 24px rgba(214, 176, 93, 0.24),
+        inset 0 0 16px rgba(255, 255, 255, 0.04);
       text-align: center;
     }
 
     .three-score-label {
-      margin: 0 0 6px;
+      margin: 0 0 8px;
       color: #d9b96f;
-      font-size: 0.95rem;
-      letter-spacing: 0.08em;
+      font-size: 0.98rem;
+      letter-spacing: 0.16em;
     }
 
     .three-score-value {
       margin: 0;
       color: #fff4c8;
-      font-size: 2.4rem;
+      font-size: clamp(3.4rem, 13vw, 5.5rem);
       font-weight: 700;
-      line-height: 1.1;
+      line-height: 0.98;
+      text-shadow: 0 0 18px rgba(255, 224, 140, 0.34);
     }
 
     .three-score-unit {
-      font-size: 1.2rem;
-      margin-left: 2px;
+      font-size: clamp(1.25rem, 5vw, 2rem);
+      margin-left: 4px;
     }
 
     .three-overall-comment-box {
-      margin: 0 auto 26px;
-      padding: 18px 20px;
-      max-width: 720px;
-      border: 1px solid rgba(214, 176, 93, 0.55);
-      border-radius: 18px;
-      background: rgba(255, 255, 255, 0.055);
-      box-shadow: 0 0 18px rgba(214, 176, 93, 0.12);
+      position: relative;
+      z-index: 1;
+      margin: 0 auto;
+      padding: 18px 20px 20px;
+      max-width: 680px;
+      border: 1px solid rgba(214, 176, 93, 0.58);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: 0 0 18px rgba(214, 176, 93, 0.13);
       color: #fff4c8;
-      line-height: 1.85;
+      line-height: 1.9;
       text-align: left;
     }
 
     .three-overall-comment-title {
-      margin: 0 0 8px;
+      margin: 0 0 10px;
       color: #d9b96f;
       font-size: 0.95rem;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.12em;
       text-align: center;
     }
 
     .three-overall-comment-text {
       margin: 0;
-      font-size: 1rem;
+      font-size: clamp(0.98rem, 3.8vw, 1.08rem);
+    }
+
+    .result-fade-in {
+      opacity: 0;
+      transform: translateY(14px);
+      animation: resultFadeIn 0.7s ease forwards;
+    }
+
+    @keyframes resultFadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   </style>
 </head>
@@ -402,17 +461,19 @@
       const overallComment = getOverallComment();
 
       const scoreHtml = `
-        <div class="three-score-box">
-          <p class="three-score-label">総合運</p>
-          <p class="three-score-value">${totalScore}<span class="three-score-unit">点</span></p>
-        </div>
-        <div class="three-overall-comment-box">
-          <p class="three-overall-comment-title">総合コメント</p>
-          <p class="three-overall-comment-text">${escapeHtml(overallComment)}</p>
+        <div class="three-result-summary result-fade-in" style="animation-delay: 0.05s;">
+          <div class="three-score-box">
+            <p class="three-score-label">総合運</p>
+            <p class="three-score-value">${totalScore}<span class="three-score-unit">点</span></p>
+          </div>
+          <div class="three-overall-comment-box">
+            <p class="three-overall-comment-title">総合コメント</p>
+            <p class="three-overall-comment-text">${escapeHtml(overallComment)}</p>
+          </div>
         </div>
       `;
 
-      const cardHtml = order.map((position) => {
+      const cardHtml = order.map((position, index) => {
         const item = drawn[position];
         const card = item.card;
         const orientationKey = item.reversed ? "reversed" : "upright";
@@ -424,7 +485,7 @@
         const imageClass = item.reversed ? "three-result-card-image is-reversed-image" : "three-result-card-image";
 
         return `
-          <section class="three-result-card">
+          <section class="three-result-card result-fade-in" style="animation-delay: ${0.18 + index * 0.12}s;">
             <div class="three-result-heading">
               <img src="${positionMeta[position].icon}" alt="" class="three-position-icon" />
               <div>
@@ -472,15 +533,19 @@
       const totalScore = getTotalScore();
       const overallComment = getOverallComment();
 
+      const shortComment = overallComment.length > 82
+        ? `${overallComment.slice(0, 82)}…`
+        : overallComment;
+
       const text = [
-        "つららの大アルカナ占い",
-        "3枚占いの結果",
-        `総合運：${totalScore}点`,
-        `総合コメント：${overallComment}`,
+        "🔮つららの大アルカナ占い",
+        `3枚占いの結果：総合運 ${totalScore}点`,
+        "",
+        shortComment,
         "",
         ...resultLines,
         "",
-        "結果を見てみる"
+        "#タロット #占い"
       ].join("\n");
 
       const shareUrl = new URL("https://twitter.com/intent/tweet");
