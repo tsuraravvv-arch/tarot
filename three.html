@@ -381,12 +381,6 @@
         <button id="threeCopyImageButton" class="result-action-button" type="button">
           画像をコピー
         </button>
-        <button id="threeCopyTextButton" class="result-action-button" type="button">
-          テキストコピー
-        </button>
-        <button id="threeShareXButton" class="share-button" type="button">
-          Xに投稿
-        </button>
       </div>
       <p class="share-help-text">画像付きで投稿したい場合は、先に画像を保存またはコピーしてからXに添付してください。</p>
       <div id="toastMessage" class="toast-message" aria-live="polite"></div>
@@ -401,7 +395,6 @@
     </section>
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script>
     let cards = [];
     let cardsLoaded = false;
@@ -426,10 +419,8 @@
     const threeCardButtons = Array.from(document.querySelectorAll(".three-card-button"));
     const threeBackToTitleButton = document.getElementById("threeBackToTitleButton");
     const threeAgainButton = document.getElementById("threeAgainButton");
-    const threeShareXButton = document.getElementById("threeShareXButton");
     const threeSaveImageButton = document.getElementById("threeSaveImageButton");
     const threeCopyImageButton = document.getElementById("threeCopyImageButton");
-    const threeCopyTextButton = document.getElementById("threeCopyTextButton");
     const toastMessage = document.getElementById("toastMessage");
     const threeResultBackButton = document.getElementById("threeResultBackButton");
 
@@ -684,6 +675,9 @@
           </div>
           <p class="share-card-comment">${escapeHtml(overallComment)}</p>
         </div>
+        <div class="result-action-buttons share-tools-inline result-fade-in" style="animation-delay: 0.12s;">
+          <button class="share-button" type="button" onclick="shareThreeCardsToX()">Xに投稿</button>
+        </div>
         <p class="detail-result-title result-fade-in" style="animation-delay: 0.14s;">カード別メッセージ</p>
       `;
 
@@ -747,22 +741,163 @@
       }, 1800);
     }
 
-    async function renderResultCardToCanvas(cardElementId) {
-      const target = document.getElementById(cardElementId);
-      if (!target || typeof html2canvas === "undefined") {
-        throw new Error("画像化に必要な処理を読み込めませんでした。");
+    function loadImageForCanvas(src) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+      });
+    }
+
+    function drawRoundRect(ctx, x, y, w, h, r) {
+      const radius = Math.min(r, w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + w - radius, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+      ctx.lineTo(x + w, y + h - radius);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+      ctx.lineTo(x + radius, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+    }
+
+    function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 3) {
+      const chars = String(text || "").split("");
+      const lines = [];
+      let line = "";
+      for (const ch of chars) {
+        const test = line + ch;
+        if (ctx.measureText(test).width > maxWidth && line) {
+          lines.push(line);
+          line = ch;
+          if (lines.length >= maxLines - 1) break;
+        } else {
+          line = test;
+        }
+      }
+      if (line) lines.push(line);
+      lines.slice(0, maxLines).forEach((lineText, index) => {
+        ctx.fillText(lineText, x, y + index * lineHeight);
+      });
+    }
+
+    async function drawCardImage(ctx, item, x, y, w, h) {
+      const img = await loadImageForCanvas(`./assets/cards/${item.card.image}`);
+      ctx.save();
+      ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+      ctx.shadowBlur = 15;
+      if (item.reversed) {
+        ctx.translate(x + w / 2, y + h / 2);
+        ctx.rotate(Math.PI);
+        ctx.drawImage(img, -w / 2, -h / 2, w, h);
+      } else {
+        ctx.drawImage(img, x, y, w, h);
+      }
+      ctx.restore();
+    }
+
+    async function renderResultCardToCanvas() {
+      if (!drawn.past || !drawn.present || !drawn.future) {
+        throw new Error("占い結果がありません。");
       }
 
-      return html2canvas(target, {
-        backgroundColor: null,
-        useCORS: true,
-        scale: Math.min(2, window.devicePixelRatio || 1.5)
-      });
+      if (document.fonts && document.fonts.ready) {
+        await document.fonts.ready;
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = 1080;
+      canvas.height = 960;
+      const ctx = canvas.getContext("2d");
+
+      const bg = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      bg.addColorStop(0, "#202044");
+      bg.addColorStop(0.55, "#111225");
+      bg.addColorStop(1, "#090b18");
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      drawRoundRect(ctx, 28, 28, canvas.width - 56, canvas.height - 56, 52);
+      ctx.strokeStyle = "#b99945";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      ctx.fillStyle = "#d9bf70";
+      ctx.font = "38px serif";
+      ctx.textAlign = "center";
+      ctx.fillText("氷洞つららのタロット占い", canvas.width / 2, 105);
+
+      drawRoundRect(ctx, 345, 150, 390, 130, 64);
+      ctx.fillStyle = "rgba(8, 10, 24, 0.58)";
+      ctx.fill();
+      ctx.strokeStyle = "#b99945";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.fillStyle = "#d9bf70";
+      ctx.font = "30px serif";
+      ctx.textAlign = "left";
+      ctx.fillText("総合運", 405, 228);
+      ctx.fillStyle = "#fff8d8";
+      ctx.font = "86px serif";
+      ctx.textAlign = "center";
+      ctx.fillText(String(getTotalScore()), 540, 230);
+      ctx.font = "36px serif";
+      ctx.fillText("点", 665, 230);
+
+      const order = ["past", "present", "future"];
+      const xs = [116, 407, 698];
+      const y = 355;
+      const cardW = 160;
+      const cardH = 240;
+      ctx.textAlign = "center";
+
+      for (let i = 0; i < order.length; i++) {
+        const position = order[i];
+        const item = drawn[position];
+        const boxX = xs[i] - 52;
+        drawRoundRect(ctx, boxX, 310, 264, 360, 30);
+        ctx.fillStyle = "rgba(255, 255, 255, 0.055)";
+        ctx.fill();
+        ctx.strokeStyle = "rgba(185, 153, 69, 0.62)";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.fillStyle = "#d9bf70";
+        ctx.font = "30px serif";
+        ctx.fillText(positionMeta[position].label, xs[i] + cardW / 2, 352);
+        await drawCardImage(ctx, item, xs[i], y + 25, cardW, cardH);
+        ctx.fillStyle = "#fff8d8";
+        ctx.font = "28px serif";
+        ctx.fillText(item.card.name_en, xs[i] + cardW / 2, y + 300);
+        ctx.fillStyle = "#d8d1bd";
+        ctx.font = "24px serif";
+        ctx.fillText(item.reversed ? "逆位置" : "正位置", xs[i] + cardW / 2, y + 340);
+      }
+
+      drawRoundRect(ctx, 70, 720, 940, 140, 30);
+      ctx.fillStyle = "rgba(8, 10, 24, 0.58)";
+      ctx.fill();
+      ctx.strokeStyle = "rgba(185, 153, 69, 0.9)";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.fillStyle = "#fff8d8";
+      ctx.font = "34px serif";
+      ctx.textAlign = "left";
+      wrapCanvasText(ctx, getOverallComment(), 105, 780, 870, 52, 2);
+
+      return canvas;
     }
 
     async function saveThreeResultImage() {
       try {
-        const canvas = await renderResultCardToCanvas("threeShareResultCard");
+        const canvas = await renderResultCardToCanvas();
         const link = document.createElement("a");
         link.download = "tsurara-tarot-three-result.png";
         link.href = canvas.toDataURL("image/png");
@@ -777,12 +912,11 @@
     async function copyThreeResultImage() {
       try {
         if (!navigator.clipboard || typeof ClipboardItem === "undefined") {
-          await copyThreeResultText();
-          showToast("画像コピー非対応のため、テキストをコピーしました");
+          showToast("このブラウザは画像コピーに対応していません");
           return;
         }
 
-        const canvas = await renderResultCardToCanvas("threeShareResultCard");
+        const canvas = await renderResultCardToCanvas();
         canvas.toBlob(async (blob) => {
           if (!blob) {
             showToast("画像コピーに失敗しました");
@@ -795,8 +929,7 @@
         }, "image/png");
       } catch (error) {
         console.error(error);
-        await copyThreeResultText();
-        showToast("画像コピー非対応のため、テキストをコピーしました");
+        showToast("画像コピーに失敗しました");
       }
     }
 
@@ -915,14 +1048,6 @@
 
     threeCopyImageButton.addEventListener("click", () => {
       copyThreeResultImage();
-    });
-
-    threeCopyTextButton.addEventListener("click", () => {
-      copyThreeResultText();
-    });
-
-    threeShareXButton.addEventListener("click", () => {
-      shareThreeCardsToX();
     });
 
     threeAgainButton.addEventListener("click", () => {
