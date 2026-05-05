@@ -981,6 +981,19 @@
       }
     }
 
+    function estimateTweetLength(text, hasUrl = true) {
+      const textLength = Array.from(text).reduce((sum, char) => {
+        return sum + (char.charCodeAt(0) <= 0x7f ? 1 : 2);
+      }, 0);
+      return textLength + (hasUrl ? 23 : 0);
+    }
+
+    function appendHashtagsIfPossible(text) {
+      const hashtags = "\n#占い #タロットカード";
+      const withHashtags = text + hashtags;
+      return estimateTweetLength(withHashtags, true) <= 280 ? withHashtags : text;
+    }
+
     function shareThreeCardsToX() {
       if (!drawn.past || !drawn.present || !drawn.future) return;
 
@@ -994,13 +1007,14 @@
 
       const totalScore = getTotalScore();
 
-      const text = [
+      const baseText = [
         `総合運：${totalScore}点`,
         ...resultLines,
         "",
         "占ってみる？",
         "氷洞つららのタロット占い"
       ].join("\n");
+      const text = appendHashtagsIfPossible(baseText);
 
       const shareUrl = new URL("https://twitter.com/intent/tweet");
       shareUrl.searchParams.set("text", text);
