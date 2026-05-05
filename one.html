@@ -685,15 +685,29 @@
       }
     }
 
+    function estimateTweetLength(text, hasUrl = true) {
+      const textLength = Array.from(text).reduce((sum, char) => {
+        return sum + (char.charCodeAt(0) <= 0x7f ? 1 : 2);
+      }, 0);
+      return textLength + (hasUrl ? 23 : 0);
+    }
+
+    function appendHashtagsIfPossible(text) {
+      const hashtags = "\n#占い #タロットカード";
+      const withHashtags = text + hashtags;
+      return estimateTweetLength(withHashtags, true) <= 280 ? withHashtags : text;
+    }
+
     function shareOneCardToX() {
       if (!currentCard) return;
 
-      const text = [
+      const baseText = [
         `今日のカード：${currentCard.number} ${currentCard.name_en}`,
         "",
         "占ってみる？",
         "氷洞つららのタロット占い"
       ].join("\n");
+      const text = appendHashtagsIfPossible(baseText);
 
       const shareUrl = new URL("https://twitter.com/intent/tweet");
       shareUrl.searchParams.set("text", text);
