@@ -82,6 +82,24 @@ button {
   top: 67.5%;
 }
 
+.ai-usage-note {
+  position: absolute;
+  right: 14px;
+  bottom: calc(10px + env(safe-area-inset-bottom));
+  z-index: 12;
+  max-width: min(58vw, 420px);
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.32);
+  color: rgba(255, 255, 255, 0.78);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+  font-size: clamp(9px, 1.4vw, 12px);
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  text-align: right;
+  pointer-events: none;
+}
+
 body.is-transitioning::after {
   content: "";
   position: fixed;
